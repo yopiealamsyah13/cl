@@ -1,0 +1,34 @@
+tambah inisial
+
+Data potensi :
+Tipe produk
+Competitor brand
+potensi pemakaian tipe produk
+potensi pemakaian per bulan
+Kemasan
+Shell Ekuivalen
+
+Data Unit / Mesin :
+merek unit
+tipe unit
+tahun pembuatan
+Oil Tank
+Type Oil
+Oil Name
+capacity spesifik : qty dan liter/kg
+capacity refill : qty dan liter/kg
+pergantian oil
+
+
+
+Data site :
+nama
+PIC
+alamat lengkap
+luas lahan
+barang yang dihasilkan
+total produksi
+
+
+
+

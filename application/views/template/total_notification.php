@@ -1,0 +1,1 @@
+<?php if($data->row()->total>0){?><?php echo $data->row()->total;?><?php }?>

@@ -1,0 +1,1 @@
+<?php if($data->row()->total>0){?><small class="label pull-right bg-red"><?php echo $data->row()->total;?></small><?php }?>
