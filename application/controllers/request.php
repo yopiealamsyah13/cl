@@ -365,6 +365,7 @@
                     'note_comment' => $note_comment,
                     'date_comment' => $date
                 );
+
                 $last = $this->request_model->add_comment($data);
 
                 
@@ -418,7 +419,7 @@
                 
                 $notification_link = site_url().'/request/view_request/'.$id.'/'.$idc;
                 $notification_label1 = $query->row()->name_user.' has change state for Request no '.$id.'<br> from '.$query2->row()->name_request_status.'  <i class="fa fa-arrow-right text-green"></i> '.$query1->row()->name_request_status;
-
+                $link_email = "<a href='http://localhost/cl/index.php/request/view_request/$id/$idc'>Disini</a>"; //link untuk email
 
                 if($new_state != $query2->row()->id_request_status)
                 {
@@ -445,6 +446,8 @@
 
                     $this->request_model->edit_request($id,$data);
                     $this->add_comment();
+                    //kirim email sesuai perubahan state
+                    $this->send_mail($new_state,$id,$link_email);
 
                 }else{
                     $this->add_comment();
@@ -458,7 +461,6 @@
                 );
 
                 $this->request_model->add_timeline($data3);
-                
 
                 redirect('request/view_request/'.$id.'/'.$idc);
             }
@@ -622,5 +624,54 @@
 
                 $data = $this->request_model->get_comments($id);
                 echo json_encode($data);
+            }
+
+            //kirim email bila state berubah
+            function send_mail($new_state,$id,$link_email)
+            {
+                $from_email = 'info@sefasgroup.com';
+
+                if($new_state == '5'){
+                    $to_email = 'yopie.alamsyah@sefasgroup.com'; //alamat email yang dituju
+                    $subject = 'New Approved Credit limit';
+                    $message = '<p>Credit limit untuk request '.$id.' diubah menjadi status approve </p><br> Click '.$link_email.' untuk melihat data';
+                }else if($new_state == '3'){
+                    $to_email = 'yopie.alamsyah@sefasgroup.com';
+                    $subject = 'New Recommended Credit limit';
+                    $message = '<p>Credit limit untuk request '.$id.' diubah menjadi status recommend </p><br> Click '.$link_email.' untuk melihat data';
+                }else if($new_state == '7'){
+                    $to_email = 'yopie.alamsyah@sefasgroup.com';
+                    $subject = 'Credit Limit Request has Closed';
+                    $message = '<p>Credit limit untuk request '.$id.' diubah menjadi status closed </p><br> Click '.$link_email.' untuk melihat data';
+                }
+
+                $config = array(
+                    'prototcol' => 'smtp',
+                    'smtp_host' => 'ssl://mail.sefasgroup.com',
+                    'smtp_port' => 465,
+                    'smtp_user' => $from_email,
+                    'smtp_pass' => '_Tr4nsf0rm.',
+                    'smtp_timeout' => '4',
+                    'mailtype' => 'html',
+                    'charset' => 'iso-8859-1'
+                );
+
+                $this->load->library('email');
+
+                $this->email->initialize($config);
+                $this->email->set_newline('\r\n');
+
+                $this->email->from($from_email,'info@sefasgroup.com');
+                $this->email->to($to_email);
+                //$this->email->cc() bila ingin menambahkan cc
+                $this->email->subject($subject);
+                $this->email->message($message);
+
+                if($this->email->send())
+                {
+                    return false;
+                }else{
+                    show_error($this->email->print_debugger());
+                }
             }
         }
