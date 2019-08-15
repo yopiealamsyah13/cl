@@ -99,6 +99,8 @@
 
             function delete_request($id)
             {
+                  $id_user = $this->session->userdata('id');
+                  
                   $this->db->where('id_request',$id);
                   $this->db->delete('db_requests');
 
@@ -113,6 +115,7 @@
 
                   $this->db->where('notification_reference_id',$id);
                   $this->db->delete('db_notification');
+
             }
 
             function add_comment($data)
@@ -139,6 +142,7 @@
                   $this->db->where('id_comment',$idc);
                   $this->db->delete('db_notification');
                   
+
                   return $result;
             }
 
