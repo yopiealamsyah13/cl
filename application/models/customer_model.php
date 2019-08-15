@@ -48,10 +48,11 @@
 
             function customer_profile($id_customer)
             {
-                  $this->otherdb->select('id_customer,name_customer,name_alias,phone_customer,fax_customer,website_customer,create_date_customer,name_user,name_customer_type');
+                  $this->otherdb->select('id_customer,name_customer,name_alias,phone_customer,fax_customer,website_customer,create_date_customer,name_user,name_customer_type,name_sector');
                   $this->otherdb->from('db_customers a');
                   $this->otherdb->join('db_users b','a.id_user=b.id');
                   $this->otherdb->join('db_customer_types c','a.id_customer_type=c.id_customer_type');
+                  $this->otherdb->join('db_customer_sectors d','a.id_sector=d.id_sector');
                   $this->otherdb->where('a.id_customer',$id_customer);
                   return $this->otherdb->get();
             }

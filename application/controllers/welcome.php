@@ -60,14 +60,15 @@ class Welcome extends CI_Controller {
 
                     $config['image_liblary'] = 'gd2';
                     $config['source_image'] = './assets/photo/'.$filename['file_name'];
+                    $config['new_image'] = './assets/photo/'.$filename['file_name'];
                     $config['create_thumb']= FALSE;
                     $config['maintain_ratio']= FALSE;
                     $config['quality']= '100%';
                     $config['width']= 354;
                     $config['height']= 354;
+                    $config['master_dim']='auto';
                     //$config['x_axis'] = 150;
                     //$config['y_axis'] = 150;
-                    $config['new_image'] = './assets/photo/'.$filename['file_name'];
 
                     $this->load->library('image_lib', $config);
                     $this->image_lib->resize();

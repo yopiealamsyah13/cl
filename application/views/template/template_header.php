@@ -2,7 +2,11 @@
   .img-circle{
     cursor:pointer;
   }
-  
+
+  .img-circle:hover{
+    box-shadow: 0 0 2px 1px rgba(120, 140, 186, 0.5);
+    opacity: 0.5;
+  }
 </style>
 
 <header class="main-header">
@@ -46,8 +50,8 @@
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
-              <li class="user-header" id="picture">
-                <img src="<?php echo base_url(); ?>assets/photo/<?php echo $this->acl->get_user()->photo;?>" class="img-circle">
+              <li class="user-header">
+                <img src="<?php echo base_url(); ?>assets/photo/<?php echo $this->acl->get_user()->photo;?>" id="picture" class="img-circle">
                 <p>
                   <?php echo $this->acl->get_user()->name_user;?>
                 </p>
@@ -80,12 +84,12 @@
             <div class="row">
               <div class="col-md-3">
                 <input name="old" type="hidden" value="<?php echo $this->acl->get_user()->photo;?>">
-                <img id="blah" src="#" alt="your image" style="border:1px solid #ddd; max-height:100%; max-width:100%;" />
+                <img id="blah" src="<?php echo base_url(); ?>assets/photo/<?php echo $this->acl->get_user()->photo;?>" alt="your image" height="100" width="100" style="border:1px solid #ddd;" />
               </div>
               <div class="col-md-9">
                 <label for="exampleInputFile">Choose File</label>
                 <input type="file" id="exampleInputFile" class="form-control" name="file_upload">
-                <p class="help-block">*Only allow photo format .jpg / .jpeg</p>
+                <p class="help-block">*Only allow format .jpg / .jpeg / .png</p>
               </div>
             </div>
           </div>

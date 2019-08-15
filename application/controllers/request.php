@@ -90,7 +90,6 @@
                 
                 $this->form_validation->set_error_delimiters('<div class="alert alert-danger"> <button type="button" class="close" data-dismiss="alert">&times;</button>', '</div>');
 
-
                 if ($this->form_validation->run() == FALSE)
                 {
                     $data['status'] = $this->request_model->get_request_status();

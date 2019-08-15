@@ -23,7 +23,7 @@ $id_role = $this->session->userdata('id_role');
             <div class="box-body box-profile">
               <h3 class="profile-username text-center"><?php echo $baris->name_customer; ?></h3>
 
-              <p class="text-muted text-center"><?php echo $baris->name_alias; ?></p>
+              <p class="text-muted text-center"><?php echo $baris->name_sector; ?></p>
 
               <ul class="list-group list-group-unbordered">
                 <li class="list-group-item">
@@ -74,7 +74,7 @@ $id_role = $this->session->userdata('id_role');
                           
                         </span>
                   <!-- /.user-block -->
-                  <p>
+                  <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
                       <?php echo $value->requested_note;?>
                   </p>
                 </div>
