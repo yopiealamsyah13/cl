@@ -1,3 +1,10 @@
+<style>
+  .img-circle{
+    cursor:pointer;
+  }
+  
+</style>
+
 <header class="main-header">
     <!-- Logo -->
     <a href="index2.html" class="logo">
@@ -39,9 +46,8 @@
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
-              <li class="user-header">
+              <li class="user-header" id="picture">
                 <img src="<?php echo base_url(); ?>assets/photo/<?php echo $this->acl->get_user()->photo;?>" class="img-circle">
-
                 <p>
                   <?php echo $this->acl->get_user()->name_user;?>
                 </p>
@@ -61,6 +67,40 @@
     </nav>
   </header>
 
+  <div class="modal fade" id="modal-default">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Change Profile Picture</h4>
+        </div>
+        <form method="post" action="<?php echo site_url('welcome/change_picture'); ?>" enctype="multipart/form-data">
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-3">
+                <input name="old" type="hidden" value="<?php echo $this->acl->get_user()->photo;?>">
+                <img id="blah" src="#" alt="your image" style="border:1px solid #ddd; max-height:100%; max-width:100%;" />
+              </div>
+              <div class="col-md-9">
+                <label for="exampleInputFile">Choose File</label>
+                <input type="file" id="exampleInputFile" class="form-control" name="file_upload">
+                <p class="help-block">*Only allow photo format .jpg / .jpeg</p>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </div>
+        </form>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+
 <script type="text/javascript">
   $(document).ready(function() {
     $.ajaxSetup({ cache: false });
@@ -79,3 +119,29 @@
     }, 3000);
   });
 </script>
+
+
+<script>
+  $(document).ready(function(){
+    $('#picture').on('click',function(){
+      $('#modal-default').modal('toggle');
+    });
+
+    function readURL(input) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        
+        reader.onload = function(e) {
+          $('#blah').attr('src', e.target.result);
+        }
+        
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    $("#exampleInputFile").change(function() {
+      readURL(this);
+    });
+
+  })
+  </script>

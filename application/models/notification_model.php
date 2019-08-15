@@ -25,7 +25,7 @@
                   $id_role = $this->session->userdata('id_role');
                   $id_user = $this->session->userdata('id');
                   $this->db->limit($limit,$per_page);
-                  $this->db->select('a.notification_id,notification_link,photo,notification_label,notification_datetime,notification_read,a.id_user');
+                  $this->db->select('a.notification_id,notification_link,photo,notification_label,notification_datetime,notification_read,a.id_user,notification_reference_id');
                   $this->db->from('db_notification a');
                   $this->db->join('db_users b','a.id_user=b.id');
                   $this->db->join('db_requests c','a.notification_reference_id=c.id_request','left');

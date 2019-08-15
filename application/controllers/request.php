@@ -171,7 +171,7 @@
                         }
                     }
              
-                    if(!empty($data2)){
+                    if(!empty($data4)){
                     $this->request_model->insert_file($data4);
                     }
 
@@ -179,11 +179,6 @@
                     $notification_label = $datas->row()->name_user.' create new request for <br><i class="fa fa-plus text-green"></i> '.$cus->row()->name_customer.'  ['.$req.']';
                     
                     $reference_type = 1;
-                    /** 
-                    if($id_role == '7'){
-                        $reference_type = 3;
-                    }
-                    */
 
                     $data2 = array(
                         'notification_label' =>$notification_label,
@@ -256,6 +251,7 @@
             function delete_request()
             {
                 $id = $this->uri->segment(3);
+                $idc = $this->uri->segment(4);
 
                 $query = $this->db->select('*');
                 $query = $this->db->from('db_request_file');
@@ -302,14 +298,15 @@
             function add_attachment()
             {
                 $config['upload_path'] = './myfile/';
-                $config['allowed_types'] = 'pdf';
+                $config['allowed_types'] = 'pdf|xlsx|xls|csv|doc|docx';
                 $config['no_space'] = TRUE;
 
                 $this->upload->initialize($config);
 
                 if ( ! $this->upload->do_upload('file_upload'))
                 {
-                    $data = array('error' => $this->upload->display_errors());
+                    print_r($this->upload->display_errors());
+                    //$data = array('error' => $this->upload->display_errors());
                 }
                 else
                 {
@@ -591,15 +588,11 @@
                 date_default_timezone_set('Asia/Jakarta');
                 $date = date('Y-m-d H:i:s');
                 $id = $this->uri->segment(3);
+                $id_request = $this->uri->segment(4);
                 $id_user = $this->session->userdata('id');
+                
 
-                $data = array(
-                    'id_notification' => $id,
-                    'id_user' => $id_user,
-                    'date' =>$date
-                );
-
-                $hsl = $this->request_model->add_request_notification($id,$id_user,$data);
+                $hsl = $this->request_model->add_request_notification($id,$id_user,$id_request,$date);
                 echo json_encode($hsl);
             }
 
@@ -669,7 +662,7 @@
 
                 if($this->email->send())
                 {
-                    return false;
+                    return true;
                 }else{
                     show_error($this->email->print_debugger());
                 }

@@ -91,6 +91,28 @@ class Customer extends CI_Controller {
 
         redirect('customer');
     }
+
+    function customer_profile()
+    {
+        $id_customer = $this->uri->segment(3);
+
+        $data['profile'] = $this->customer_model->customer_profile($id_customer);
+        $data['request'] = $this->customer_model->customer_request($id_customer);
+        $data['activity'] = $this->customer_model->customer_activity($id_customer);
+        $data['timeline'] = $this->customer_model->customer_timeline($id_customer);
+
+        $customer = $this->acl->get_user_permissions()->customer;
+        if($this->session->userdata('logged_in') and $customer=='1')
+        {
+            $data['isi'] = 'customer/profile';
+            $this->load->view('preview', $data, true);
+            $this->load->view('template/template', $this->data); 
+        }
+        else
+        {
+            redirect('login','refresh');
+        } 
+    }
 }
 
 /* End of file welcome.php */

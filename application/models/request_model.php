@@ -100,7 +100,7 @@
             function delete_request($id)
             {
                   $id_user = $this->session->userdata('id');
-                  
+
                   $this->db->where('id_request',$id);
                   $this->db->delete('db_requests');
 
@@ -116,6 +116,8 @@
                   $this->db->where('notification_reference_id',$id);
                   $this->db->delete('db_notification');
 
+                  $this->db->where('id_request',$id);
+                  $this->db->delete('db_read_notification');
             }
 
             function add_comment($data)
@@ -142,7 +144,6 @@
                   $this->db->where('id_comment',$idc);
                   $this->db->delete('db_notification');
                   
-
                   return $result;
             }
 
@@ -167,9 +168,9 @@
                   $this->db->insert('db_request_file', $data2);
             }
 
-            function insert_file($data2)
+            function insert_file($data4)
             {
-                  $this->db->insert_batch('db_request_file',$data2);
+                  $this->db->insert_batch('db_request_file',$data4);
             }
 
             function get_request_status()
@@ -231,14 +232,26 @@
             function get_customer()
             {
                   $this->otherdb = $this->load->database('otherdb', TRUE);
+                  $id_user = $this->session->userdata('id');
                   $id_area = $this->session->userdata('id_area');
+                  $id_role = $this->session->userdata('id_role');
 
                   $this->otherdb->select('id_customer,name_customer,name_user');
                   $this->otherdb->from('db_customers a');
                   $this->otherdb->join('db_users b','a.id_user=b.id');
-                  $this->otherdb->where('b.id_area',$id_area);
                   $this->otherdb->where('a.status_delete','0');
                   $this->otherdb->order_by('a.name_customer','ASC');
+
+                  
+
+                  if($id_role=='10')
+                  {
+                        if( $id_user != '171')
+                        {
+                              $this->otherdb->where('b.id_area',$id_area);
+                        }
+                  }
+
                   return $this->otherdb->get();
             }
 
@@ -248,6 +261,7 @@
                   $this->otherdb->select('id_customer,name_customer,name_user,project_code,status_existing,mobile_phone');
                   $this->otherdb->from('db_customers a');
                   $this->otherdb->join('db_users b','a.id_user=b.id');
+                  //$this->otherdb->join('db_companies c','a.id_entity=c.id');
                   $this->otherdb->where('a.status_delete','0');
                   $this->otherdb->order_by('a.name_customer','ASC');
                   return $this->otherdb->get();
@@ -435,7 +449,7 @@
                   $id_role = $this->session->userdata('id_role');
                   $now = date('Y-m-d H:i:s');  //mengambil tanggal sekarang
 
-                  $this->db->select('a.notification_id,notification_link,photo,notification_label,notification_datetime,notification_read,a.id_user');
+                  $this->db->select('a.notification_id,notification_link,photo,notification_label,notification_datetime,notification_read,a.id_user,c.id_customer,notification_reference_id');
                   $this->db->from('db_notification a');
                   $this->db->join('db_users b','a.id_user=b.id');
                   $this->db->join('db_requests c','a.notification_reference_id=c.id_request','left');
@@ -465,7 +479,7 @@
             }
 
             //add read
-            function add_request_notification($id,$id_user,$data)
+            function add_request_notification($id,$id_user,$id_request,$date)
             {
 
                   $this->db->where('id_notification',$id);
@@ -475,7 +489,27 @@
                   if ($query->num_rows()>0) {
                         return true;
                   }else{
-                        $hasil = $this->db->insert('db_read_notification',$data);
+
+                        $this->db->select('a.notification_id');
+                        $this->db->from('db_notification a');
+                        $this->db->where('a.id_user !=',$id_user);
+                        $this->db->where('a.notification_reference_id',$id_request);
+                        $this->db->where('a.notification_id not in(SELECT id_notification FROM db_read_notification WHERE id_user ='.$id_user.')',null,false);
+                        $query2 = $this->db->get();
+                        //$query2 = $this->get_notification_batch($id_user,$idr);
+                        
+                        $data = array();
+
+                        foreach ($query2->result() as $value) {
+                              $data[] = array(
+                                    'id_notification' => $value->notification_id,
+                                    'id_user' => $id_user,
+                                    'id_request' => $id_request,
+                                    'date' =>$date
+                              );
+                        } 
+
+                        $hasil = $this->db->insert_batch('db_read_notification',$data);
                         return $hasil;
                   }
             }
@@ -570,5 +604,21 @@
                   $result = $this->db->get();
                   return $result->result();
             }
- 
+
+            //change profile picture
+            function change_picture($data,$id_user)
+            {
+                  $this->db->where('id',$id_user);
+                  $this->db->update('db_users',$data);
+            }
+
+            //function untuk insert notification read yang memiliki id request sama
+            function get_notification_batch($id_user,$idr)
+            {
+                  $this->db->select('id_notification,notification_label');
+                  $this->db->from('db_notification');
+                  $this->db->where('id_user !=',$id_user);
+                  $this->db->where('notification_reference_id',$idr);
+                  return $this->db->get();
+            }
       }

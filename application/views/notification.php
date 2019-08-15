@@ -15,7 +15,7 @@
               <div class="box-comment" <?php
                 foreach($unread->result() as $key){
                  if($key->notification_id == $rowc->notification_id){ ?>style="background: #c5c5c5;"<?php }} ?>>
-                <a href="" class="read" data-value="<?php echo $rowc->notification_id;?>" data-path="<?php echo $rowc->notification_link;?>">
+                <a href="" class="read" data-value="<?php echo $rowc->notification_id;?>" data-path="<?php echo $rowc->notification_link;?>" data-req="<?php echo $rowc->notification_reference_id;?>">
                 <!-- User image -->
                 <img class="img-circle img-sm" src="<?php echo base_url(); ?>assets/photo/<?php echo $rowc->photo;?>">
                 <div class="comment-text">
@@ -69,11 +69,12 @@ $(document).ready(function(){
         var date = new Date();
         var notification_id = $(this).data('value');
         var url = $(this).data('path');
+        var id_request = $(this).data('req');
         $.ajax({
             method:"POST",
             dataType : "json",
-            url : "<?php echo site_url('request/insert_read/')?>/"+notification_id,
-            data :{id_notification:notification_id,id_user:id_user,date:date},
+            url : "<?php echo site_url('request/insert_read/')?>/"+notification_id+"/"+id_request,
+            data :{id_notification:notification_id,id_user:id_user,id_request:id_request,date:date},
             success:function(data){
                 window.location.replace(url);
             },

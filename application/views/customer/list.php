@@ -42,7 +42,7 @@
     ?>
       <tr>
         <td><?php echo $no; ?></td>
-        <td><?php echo strtoupper($baris->name_customer);?></td>
+        <td><a href="<?php echo site_url('customer/customer_profile/'.$baris->id_customer); ?>"><?php echo strtoupper($baris->name_customer);?></a></td>
         <td><?php echo $baris->name_user;?></td>
         <td><?php echo number_format($baris->credit_limit,0,',','.');?></td>
         <td><?php echo $baris->outstanding_over;?></td>

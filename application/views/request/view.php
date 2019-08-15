@@ -293,13 +293,13 @@ $id_role = $this->session->userdata('id_role');
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                         <h4 class="modal-title" id="ModalLabel">Attach File</h4>
                 </div>
-            <form name="form-validate" id="close" class="form-horizontal" enctype="multipart/form-data" method="post" action="<?php echo site_url(); ?>/request/add_attachment/<?php echo $baris->id_request;?>/<?php echo $baris->id_customer; ?>">
-
+             <form name="form-validate" id="close" class="form-horizontal" enctype="multipart/form-data" method="post" action="<?php echo site_url(); ?>/request/add_attachment/<?php echo $baris->id_request;?>/<?php echo $baris->id_customer; ?>">
             <div class="modal-body">
               <div class="form-group">
                 <label for="file_upload" class="col-sm-3 control-label">Select File :</label>
                   <div class="col-sm-6">
                     <input type="file" class="form-control" name="file_upload">
+                    <p>* Hanya file berupa .pdf/.xls/.xlsx </p>
                   </div>
               </div>
               
