@@ -2,6 +2,7 @@
   $user_list = $this->acl->get_user_permissions()->user_list;
   $user_role = $this->acl->get_user_permissions()->user_role;
   $customer = $this->acl->get_user_permissions()->customer;
+  $outstanding = $this->acl->get_user_permissions()->outstanding;
   $id_role = $this->session->userdata('id_role');
 ?>
 <!-- Left side column. contains the logo and sidebar -->
@@ -41,6 +42,13 @@
             <i class="fa fa-list"></i> <span>History</span>
           </a>
         </li>
+        <?php if($outstanding=='1'){ ?>
+        <li>
+          <a href="<?php echo site_url('outstanding'); ?>">
+            <i class="fa fa-info"></i> <span>AR Outstanding</span>
+          </a>
+        </li>
+        <?php } ?>
         <li>
           <a href="<?php echo site_url('feeds'); ?>">
             <i class="fa fa-info"></i> <span>Feeds</span>

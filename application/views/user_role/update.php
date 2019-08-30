@@ -21,7 +21,7 @@
     <label for="role" class="col-sm-2 control-label">User Role List</label>
 
 <div class="row">
-    <div class="col-sm-3">
+<div class="col-sm-3">
     <?php $admin_login = $this->acl->get_role_id_permissions($baris->id)->admin_login;?>
     <input type="hidden" name="admin_login" value="0">
     <br><span class="box-heading"><input type="checkbox" name="admin_login" value="1" <?php if($admin_login==1){echo "checked=checked";}?>> Admin Login</span>
@@ -39,6 +39,7 @@
     <br><span class="box-heading"><input type="checkbox" name="user_role" value="1" <?php if($user_role==1){echo "checked=checked";}?>> User Role</span>
     </div>
 
+    <div class="col-sm-3">
     <?php $request = $this->acl->get_role_id_permissions($baris->id)->request;?>
     <input type="hidden" name="request" value="0">
     <br><span class="box-heading"><input type="checkbox" name="request" value="1" <?php if($request==1){echo "checked=checked";}?>> Request</span>
@@ -47,6 +48,10 @@
     <input type="hidden" name="view_request" value="0">
     <br><span class="box-heading"><input type="checkbox" name="view_request" value="1" <?php if($view_request==1){echo "checked=checked";}?>> View Request</span>
 
+    <?php $add_request = $this->acl->get_role_id_permissions($baris->id)->add_request;?>
+    <input type="hidden" name="add_request" value="0">
+    <br><span class="box-heading"><input type="checkbox" name="add_request" value="1" <?php if($add_request==1){echo "checked=checked";}?>> Add Request</span>
+
     <?php $customer = $this->acl->get_role_id_permissions($baris->id)->customer;?>
     <input type="hidden" name="customer" value="0">
     <br><span class="box-heading"><input type="checkbox" name="customer" value="1" <?php if($customer==1){echo "checked=checked";}?>> Customer</span>
@@ -54,6 +59,10 @@
     <?php $notification = $this->acl->get_role_id_permissions($baris->id)->notification;?>
     <input type="hidden" name="notification" value="0">
     <br><span class="box-heading"><input type="checkbox" name="notification" value="1" <?php if($notification==1){echo "checked=checked";}?>> Notification</span>
+
+    <?php $outstanding = $this->acl->get_role_id_permissions($baris->id)->outstanding;?>
+    <input type="hidden" name="outstanding" value="0">
+    <br><span class="box-heading"><input type="checkbox" name="outstanding" value="1" <?php if($outstanding==1){echo "checked=checked";}?>> AR Outstanding</span>
     </div>
 </div>
 <div class="box-footer">

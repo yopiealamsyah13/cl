@@ -43,6 +43,8 @@
 <script src="<?php echo base_url(); ?>assets/plugins/autoNumeric/autoNumeric.js"></script>
 <!-- Multi Upload File -->
 <script src="<?php echo base_url(); ?>assets/fileinput/js/fileinput.js"></script>
+<!-- jcrop -->
+<script src="<?php echo base_url(); ?>assets/bower_components/jcrop/jquery.Jcrop.js"></script>
 
   <!-- Bootstrap 3.3.7 -->
   <link rel="stylesheet" href="<?php echo base_url(); ?>assets/bower_components/bootstrap/dist/css/bootstrap.min.css">
@@ -69,6 +71,8 @@
 
   <!-- Google Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+  <!-- jcrop css -->
+  <link rel="stylesheet" href="<?php echo base_url(); ?>assets/bower_components/jcrop/jquery.Jcrop.css">
 
 </head>
 <body class="hold-transition skin-blue fixed sidebar-mini" id="<?php echo isset($modul) ? $modul : ''; ?>">

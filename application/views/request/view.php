@@ -104,7 +104,7 @@ $id_role = $this->session->userdata('id_role');
   </div>
 </div>
 <div class="row">
-        <div class="col-sm-9">
+        <div class="col-sm-6">
           <!-- Box Comment -->
           <div class="box box-widget">
             <div class="box-header with-border">
@@ -234,7 +234,7 @@ $id_role = $this->session->userdata('id_role');
           <!-- end ajax for comment -->
         </div>
 
-        <div class="col-sm-9">
+        <div class="col-sm-6">
           <!-- Box Comment -->
           <div class="box box-widget">
             <div class="box-header with-border">
@@ -246,7 +246,6 @@ $id_role = $this->session->userdata('id_role');
             <!-- /.box-header -->
 
             <div class="box-footer box-comments">
-              
               <div class="box-comment">
                     <!-- row -->
                     <div class="row">

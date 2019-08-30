@@ -23,16 +23,18 @@
             {
                 $per_page = abs($this->input->get('per_page'));
                 $limit = 10;
-                $cari = $this->input->get('search');
+                $status = $this->input->get('status');
+                $area = $this->input->get('area');
 
                 $tot = $this->request_model->all();
-                $data['name'] = $this->request_model->limit($limit,$per_page,$cari);
+                $data['name'] = $this->request_model->limit($limit,$per_page,$status,$area);
                 $data['status'] = $this->request_model->get_request_status();
                 $data['customer'] = $this->request_model->get_all_customer();
                 $data['user'] = $this->request_model->get_user();
+                $data['area'] = $this->request_model->get_list_area();
 
                 $pagination['page_query_string']  = TRUE;    
-                $pagination['base_url']           = site_url().'/request?search='.$cari;
+                $pagination['base_url']           = site_url().'/request?area='.$area.'&status'.$status;
                 $pagination['total_rows']         = $tot->num_rows();
                 $pagination['per_page']           = $limit;
                 $pagination['uri_segment']        = $per_page;

@@ -40,12 +40,17 @@
     <input type="hidden" name="view_request" value="0">
     <br><span class="box-heading"><input type="checkbox" name="view_request" value="1"> View Request</span>
 
+    <input type="hidden" name="add_request" value="0">
+    <br><span class="box-heading"><input type="checkbox" name="add_request" value="1"> Add Request</span>
+
     <input type="hidden" name="customer" value="0">
     <br><span class="box-heading"><input type="checkbox" name="customer" value="1"> Customer</span>
 
     <input type="hidden" name="notification" value="0">
     <br><span class="box-heading"><input type="checkbox" name="notification" value="1"> Notification</span>
 
+    <input type="hidden" name="outstanding" value="0">
+    <br><span class="box-heading"><input type="checkbox" name="outstanding" value="1"> AR Outstanding</span>
     </div>
 </div>
 

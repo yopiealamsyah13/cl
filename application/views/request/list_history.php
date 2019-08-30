@@ -33,6 +33,7 @@
         <th width="100" align="center">No.</th>
         <th width="100">Request Date</th>
         <th width="100">Request by</th>
+        <th>Entity</th>
         <th width="150">Sales Name</th>
         <th>Customer Name</th>
         <th>Lead Time</th>
@@ -48,6 +49,7 @@
         <td><a href="<?php echo site_url() ?>/request/view_request/<?php echo $baris->id_request;?>/<?php echo $baris->id_customer; ?>"><?php echo $baris->id_request;?></a></td>
         <td><?php echo date('d M Y g:i a',strtotime($baris->requested_date));?></td>
         <td><?php foreach($user->result() as $rowu){if($baris->id_user==$rowu->id){echo $rowu->name_user;}}?></td>
+        <td><?php foreach($customer->result() as $rowc){if($baris->id_customer==$rowc->id_customer){echo $rowc->alias_company;}}?></td>
         <td><?php foreach($customer->result() as $rowc){if($baris->id_customer==$rowc->id_customer){echo $rowc->name_user;}}?></td>
         <td><?php foreach($customer->result() as $rowc){if($baris->id_customer==$rowc->id_customer){echo strtoupper($rowc->name_customer);}}?></td>
         <td>

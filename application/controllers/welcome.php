@@ -45,6 +45,8 @@ class Welcome extends CI_Controller {
 
                 $config['upload_path'] = './assets/photo/';
                 $config['allowed_types'] = 'jpg|jpeg|png';
+                $config['width']= 354;
+                $config['height']= 354;
                 //$config['file_name'] = $id_user;
                 //$config['overwrite'] = TRUE;
 
@@ -52,27 +54,35 @@ class Welcome extends CI_Controller {
 
                 if ( ! $this->upload->do_upload('file_upload'))
                 {
-                    print_r($this->upload->display_errors());
+                    ?>
+                        <script type="text/javascript">
+                            alert("This photo can not be upload");
+                        </script>
+                    <?php
+                    redirect('welcome','refresh');
                 }
                 else
                 {
                     $filename = $this->upload->data();
+                    $new_ratio = $config['width'] / $config['height'];
 
-                    $config['image_liblary'] = 'gd2';
-                    $config['source_image'] = './assets/photo/'.$filename['file_name'];
-                    $config['new_image'] = './assets/photo/'.$filename['file_name'];
-                    $config['create_thumb']= FALSE;
-                    $config['maintain_ratio']= FALSE;
-                    $config['quality']= '100%';
-                    $config['width']= 354;
-                    $config['height']= 354;
-                    $config['master_dim']='auto';
-                    //$config['x_axis'] = 150;
-                    //$config['y_axis'] = 150;
+                    $new_image['image_liblary'] = 'gd2';
+                    $new_image['source_image'] = './assets/photo/'.$filename['file_name'];
+                    $new_image['new_image'] = './assets/photo/'.$filename['file_name'];
+                    $new_image['create_thumb']= false;
+                    $new_image['maintain_ratio']= false;
+                    $new_image['quality']= '100%';
+                    //$new_image['width']= $config['width'];
+                    //$new_image['height']= round($config['width']/$new_ratio);
+                    //$new_image['x_axis']= 0;
+                    //$new_image['y_axis']= round($config['width']-$new_image['width']/2);
+                    $new_image['width'] = $config['width'];
+                    $new_image['height'] = $config['height'];
+                    $new_image['master_dim']= 'auto';
 
-                    $this->load->library('image_lib', $config);
-                    $this->image_lib->resize();
+                    $this->load->library('image_lib', $new_image);
                     //$this->image_lib->crop();
+                    $this->image_lib->resize();
                     $file = $filename['file_name'];
 
                     unlink('./assets/photo/'.$old);

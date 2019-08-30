@@ -41,7 +41,7 @@
                   return  $this->db->get();
             }
 
-            function limit($limit,$per_page,$cari)
+            function limit($limit,$per_page,$status,$area)
             {
                   $id_user = $this->session->userdata('id');
                   $id_role = $this->session->userdata('id_role');
@@ -49,12 +49,13 @@
                   $this->db->select('*');
                   $this->db->from('db_requests a');
                   $this->db->join('db_request_status b','a.id_request_status=b.id_request_status');
-                  $this->otherdb->join('db_customers c','a.id_customer=c.id_customer');
+                  //$this->otherdb->join('db_customers c','a.id_customer=c.id_customer');
+                  $this->db->join('db_users c','a.id_user=c.id');
                   $this->db->order_by('a.requested_date','DESC');
 
                   if($id_role=='1')
                   {
-                        $this->db->where('a.id_request_status','5');
+                        $this->db->where('a.id_request_status !=','7');
                   }
 
                   if($id_role=='7')
@@ -73,10 +74,14 @@
                         $this->db->where('a.id_user',$id_user);
                   }
                   
-                  if($cari!="")
+                  if($area!='')
                   {
-                        $this->db->like('id_request',$cari);
-                        $this->db->or_like('b.name_request_status',$cari);
+                        $this->db->where('c.id_area',$area);
+                  }
+
+                  if($status != '')
+                  {
+                        $this->db->where('a.id_request_status',$status);
                   }
        
                   $this->db->limit($limit,$per_page);
@@ -258,10 +263,10 @@
             function get_all_customer()
             {
                   $this->otherdb = $this->load->database('otherdb', TRUE);
-                  $this->otherdb->select('id_customer,name_customer,name_user,project_code,status_existing,mobile_phone');
+                  $this->otherdb->select('id_customer,name_customer,name_user,project_code,status_existing,mobile_phone,alias_company');
                   $this->otherdb->from('db_customers a');
                   $this->otherdb->join('db_users b','a.id_user=b.id');
-                  //$this->otherdb->join('db_companies c','a.id_entity=c.id');
+                  $this->otherdb->join('db_companies c','b.id_company=c.id_company');
                   $this->otherdb->where('a.status_delete','0');
                   $this->otherdb->order_by('a.name_customer','ASC');
                   return $this->otherdb->get();
@@ -369,6 +374,7 @@
 
             function limit_history($limit,$per_page,$cari)
             {
+                  $this->otherdb = $this->load->database('otherdb', TRUE);
                   $id_user = $this->session->userdata('id');
                   $id_role = $this->session->userdata('id_role');
                   $this->db->select('*');
@@ -455,7 +461,7 @@
                   $this->db->join('db_requests c','a.notification_reference_id=c.id_request','left');
                   $this->db->where('a.id_user !=',$id_user);
                   $this->db->order_by('a.notification_id','DESC');
-
+                  
                   if($id_role == 1)
                   {
                         $this->db->where('c.id_request_status',5);
@@ -619,6 +625,15 @@
                   $this->db->from('db_notification');
                   $this->db->where('id_user !=',$id_user);
                   $this->db->where('notification_reference_id',$idr);
+                  return $this->db->get();
+            }
+
+            function get_list_area()
+            {
+                  $this->db->select('id_area, name_company, name_area');
+                  $this->db->from('db_companies a');
+                  $this->db->join('db_company_areas b','a.id_company=b.id_company');
+                  $this->db->order_by('name_company','ASC');
                   return $this->db->get();
             }
       }

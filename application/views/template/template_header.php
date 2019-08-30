@@ -84,11 +84,15 @@
             <div class="row">
               <div class="col-md-3">
                 <input name="old" type="hidden" value="<?php echo $this->acl->get_user()->photo;?>">
-                <img id="blah" src="<?php echo base_url(); ?>assets/photo/<?php echo $this->acl->get_user()->photo;?>" alt="your image" height="100" width="100" style="border:1px solid #ddd;" />
+                <img id="blah" class="crop" src="<?php echo base_url(); ?>assets/photo/<?php echo $this->acl->get_user()->photo;?>" alt="your image" height="130" width="130" style="border:1px solid #ddd;" />
               </div>
               <div class="col-md-9">
                 <label for="exampleInputFile">Choose File</label>
                 <input type="file" id="exampleInputFile" class="form-control" name="file_upload">
+                <input type="hidden" id="x" name="x" />
+                <input type="hidden" id="y" name="y" />
+                <input type="hidden" id="w" name="w" />
+                <input type="hidden" id="h" name="h" />
                 <p class="help-block">*Only allow format .jpg / .jpeg / .png</p>
               </div>
             </div>
@@ -137,6 +141,12 @@
         
         reader.onload = function(e) {
           $('#blah').attr('src', e.target.result);
+          $('.crop').Jcrop({
+            onSelect: updateCoords,
+            bgOpacity:   .4,
+            setSelect:   [ 100, 100, 50, 50 ],
+            aspectRatio: 16 / 9
+        })
         }
         
         reader.readAsDataURL(input.files[0]);
@@ -144,8 +154,17 @@
     }
 
     $("#exampleInputFile").change(function() {
+      consol.log(this);
       readURL(this);
     });
 
+    function updateCoords(c)
+    {
+      console.log(c);
+      $('#x').val(c.x);
+      $('#y').val(c.y);
+      $('#w').val(c.w);
+      $('#h').val(c.h);
+    }
   })
   </script>

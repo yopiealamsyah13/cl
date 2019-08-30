@@ -1,15 +1,38 @@
 <?php
   $id_role = $this->session->userdata('id_role');
+  $add_request = $this->acl->get_user_permissions()->add_request;
 ?>
 
 <section class="content-header">
-  <h1>CREDIT LIMIT REQUEST</h1>
-  <?php if($id_role=='10' || $id_role=='7'){ ?>
-  <ol class="breadcrumb">
-    <a class="btn btn-primary btn-xs" href="<?php echo site_url() ?>/request/add_request"><i class="fa fa-plus"></i> Add</a>
-  </ol>
-  <?php } ?>
-  
+<h1>CREDIT LIMIT REQUEST</h1>
+    <ol class="breadcrumb">
+      <form name="cari" action="<?php echo site_url() ?>/request" method="GET">
+      <div class="input-group input-group-sm">
+        <?php if($id_role!='10'){?>
+          <select name="status" class="form-control" style="width: 200px">
+            <option value="">- Select State -</option>
+            <?php foreach ($status->result() as $value) { ?>
+            <option value="<?php echo $value->id_request_status; ?>"><?php echo $value->name_request_status; ?></option>
+            <?php } ?>
+          </select>
+          <select name="area" class="form-control" style="width: 200px">
+            <option value="">- Select SBU -</option>
+            <?php foreach ($area->result() as $vala) { ?>
+            <option value="<?php echo $vala->id_area; ?>"><?php echo $vala->name_company.' - '.$vala->name_area; ?></option>
+            <?php } ?>
+          </select>
+        <?php } ?>
+          <div class="btn-group">
+            <?php if($id_role!='10'){?>
+            <button class="btn btn-sm btn-primary" type="submit"><span class="fa fa-search"></span></button>
+            <?php }?>
+            <?php if($add_request=='1'){ ?>
+            <a class="btn btn-primary btn-sm" href="<?php echo site_url() ?>/request/add_request"><i class="fa fa-plus"></i> Add</a>
+            <?php } ?>
+          </div>
+      </div>
+    </form>
+    </ol>
 </section>
 <section class="content">
 
@@ -20,25 +43,14 @@
     if(count($name->result()) > 0) {
   ?>
 <div class="box-body">
-<div class="box-tools pull-right">
-    <form name="cari" method="GET" action="<?php echo site_url('request'); ?>">
-        <div class="input-group input-group-sm" style="width: 150px;">
-            <input type="text" name="search" id="get_customer" class="form-control pull-right" placeholder="Search">
-            <div class="input-group-btn">
-            <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
-            </div>
-        </div>
-    </form>
-  </div>
-  <br>
-  <br>
   <table id="mytable" class="table table-bordered table-striped table-responsive">
     <thead>
-      <tr>
+      <tr  style="background-color: #3c8dbc; color: #fff;">
         <th width="150">State</th>
         <th width="70">No.</th>
         <th width="100">Request Date</th>
         <th width="120">Requested by</th>
+        <th>Entity</th>
         <th width="150">Sales Name</th>
         <th>Customer Name</th>
         <th>Lead Time</th>
@@ -54,6 +66,7 @@
         <td><?php if($baris->id_request_status=='7'){echo "<strike>";}?><a href="<?php echo site_url() ?>/request/view_request/<?php echo $baris->id_request;?>/<?php echo $baris->id_customer; ?>"><?php echo $baris->id_request;?></a><?php if($baris->id_request_status=='7'){echo "</strike>";}?></td>
         <td><?php if($baris->id_request_status=='7'){echo "<strike>";}?><?php echo date('d M Y g:i a',strtotime($baris->requested_date));?><?php if($baris->id_request_status=='7'){echo "</strike>";}?></td>
         <td><?php if($baris->id_request_status=='7'){echo "<strike>";}?><?php foreach($user->result() as $rowu){if($baris->id_user==$rowu->id){echo $rowu->name_user;}}?><?php if($baris->id_request_status=='7'){echo "</strike>";}?></td>
+        <td><?php if($baris->id_request_status=='7'){echo "<strike>";}?><?php foreach($customer->result() as $rowc){if($baris->id_customer==$rowc->id_customer){echo $rowc->alias_company;}}?><?php if($baris->id_request_status=='7'){echo "</strike>";}?></td>
         <td><?php if($baris->id_request_status=='7'){echo "<strike>";}?><?php foreach($customer->result() as $rowc){if($baris->id_customer==$rowc->id_customer){echo $rowc->name_user;}}?><?php if($baris->id_request_status=='7'){echo "</strike>";}?></td>
         <td><?php if($baris->id_request_status=='7'){echo "<strike>";}?><?php foreach($customer->result() as $rowc){if($baris->id_customer==$rowc->id_customer){echo strtoupper($rowc->name_customer);}}?><?php if($baris->id_request_status=='7'){echo "</strike>";}?></td>
         <td>

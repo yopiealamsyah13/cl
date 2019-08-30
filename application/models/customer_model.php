@@ -48,7 +48,7 @@
 
             function customer_profile($id_customer)
             {
-                  $this->otherdb->select('id_customer,name_customer,name_alias,phone_customer,fax_customer,website_customer,create_date_customer,name_user,name_customer_type,name_sector');
+                  $this->otherdb->select('id_customer,name_customer,name_alias,phone_customer,fax_customer,website_customer,create_date_customer,name_user,name_customer_type,name_sector,status_existing,npwp_customer');
                   $this->otherdb->from('db_customers a');
                   $this->otherdb->join('db_users b','a.id_user=b.id');
                   $this->otherdb->join('db_customer_types c','a.id_customer_type=c.id_customer_type');
@@ -59,7 +59,7 @@
 
             function customer_request($id_customer)
             {
-                  $this->db->select('*');
+                  $this->db->select('requested_date');
                   $this->db->from('db_requests');
                   $this->db->where('id_customer',$id_customer);
                   $this->db->order_by('id_request','DESC');
@@ -69,16 +69,19 @@
 
             function customer_activity($id_customer)
             {
-
-            }
-
-            function customer_timeline($id_customer)
-            {
-                  $this->db->select('a.id_request,a.id_customer,a.id_request_status,requested_note,name_request_status');
+                  $this->db->select('a.id_request,a.id_customer,a.id_request_status,requested_note,name_request_status,requested_date,credit_limit,max_top');
                   $this->db->from('db_requests a');
                   $this->db->join('db_request_status b','a.id_request_status=b.id_request_status');
                   $this->db->where('a.id_customer',$id_customer);
                   $this->db->order_by('a.id_request','DESC');
+                  return $this->db->get();
+            }
+
+            function total_cl($id_customer)
+            {
+                  $this->db->select('id_customer, sum(credit_limit) as total');
+                  $this->db->from('db_requests');
+                  $this->db->where('id_customer',$id_customer);
                   return $this->db->get();
             }
       }

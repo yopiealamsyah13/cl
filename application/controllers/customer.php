@@ -99,7 +99,7 @@ class Customer extends CI_Controller {
         $data['profile'] = $this->customer_model->customer_profile($id_customer);
         $data['request'] = $this->customer_model->customer_request($id_customer);
         $data['activity'] = $this->customer_model->customer_activity($id_customer);
-        $data['timeline'] = $this->customer_model->customer_timeline($id_customer);
+        $data['credit'] = $this->customer_model->total_cl($id_customer);
 
         $customer = $this->acl->get_user_permissions()->customer;
         if($this->session->userdata('logged_in') and $customer=='1')
