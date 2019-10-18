@@ -26,26 +26,50 @@
 <div class="box-body">
   <table id="mytable" class="table table-bordered table-striped">
     <thead>
-      <tr>
-        <th width="33">No.</th>
-        <th width="300">Customer</th>
-        <th width="150">Sales</th>
-        <th width="150">Credit Limit</th>
-        <th width="100">TOP</th>
-        <th width="33">#</th>
+      <tr style="background-color: #3c8dbc; color: #fff;">
+        <td width="33">No.</td>
+        <td width="300">Customer</td>
+        <td width="150">Sales</td>
+        <td width="100">Master Credit Limit</td>
+        <td width="100">Master TOP</td>
+        <td width="100">Credit Limit</td>
+        <td width="100">Max Outstanding Days</td>
+        <td width="100">AR Outstanding</td>
+        <td width="100">Over Under</td>
+        <td width="33">#</td>
       </tr>
     </thead>
 
     <tbody> 
     <?php
       foreach($name->result() as $baris){
+        $credit_limit=0;
+        $total=0;
     ?>
       <tr>
         <td><?php echo $no; ?></td>
-        <td><a href="<?php echo site_url('customer/customer_profile/'.$baris->id_customer); ?>"><?php echo strtoupper($baris->name_customer);?></a></td>
+        <td><a href="<?php echo site_url();?>/customer/customer_profile/<?php echo $baris->id_customer; ?>"><?php if($baris->name_entity!='Pte Ltd' and $baris->name_entity!='Ltd' and $baris->name_entity!='GmbH & Co. KG' and $baris->name_entity!='Other' and $baris->name_entity!='Perseorangan'){ echo $baris->name_entity;}?> <?php echo strtoupper($baris->name_customer);?> <?php if($baris->name_entity=='Pte Ltd' or $baris->name_entity=='Ltd' or $baris->name_entity=='GmbH & Co. KG'){ echo strtoupper($baris->name_entity);}?> <?php if($baris->status_existing=='1'){?><i class="fa fa-check text-success"></i><?php } ?></td>
         <td><?php echo $baris->name_user;?></td>
         <td><?php echo number_format($baris->credit_limit,0,',','.');?></td>
         <td><?php echo $baris->outstanding_over;?></td>
+        <td><?php foreach($data->result() as $row){if($baris->id_customer==$row->id_customer){ $credit_limit = $row->credit_limit; echo number_format($credit_limit,0,',','.');}} ?></td>
+        <td><?php foreach($data->result() as $row){if($baris->id_customer==$row->id_customer){echo number_format($row->max_top,0,',','.');}} ?></td>
+        <td><a href="<?php echo site_url();?>/outstanding?cust=<?php echo $baris->id_customer;?>"><?php foreach($outstanding->result() as $rowo){if($baris->id_customer==$rowo->id_customer){$total = $rowo->total; if($total!='0'){echo number_format($total,0,',','.');}}} ?></a></td>
+        <td>
+          <?php
+            $selisih = $credit_limit-$total;
+            if ($selisih < 0)
+            {
+              $print_number = "<span style='color:red;'>(".str_replace('-', '', number_format ($selisih, 0, ",", ".")) . ")</span>"; 
+            }else{ 
+              $print_number = number_format ($selisih, 0, ",", ".") ; 
+            }
+            if($print_number!='0')
+            {
+              echo $print_number;
+            }
+          ?>
+        </td>
         <td>
           <a class="btn btn-success btn-xs" data-toggle="modal" data-target="#edit<?php echo $baris->id_customer;?>"><span class="fa fa-pencil"></span></a>
 
@@ -119,7 +143,7 @@ $(document).ready(function() {
     ?>
 
       <tr>
-        <td colspan="6">
+        <td colspan="10">
           <div class="pagination"><?php echo $this->pagination->create_links(); ?></div>
         </td>
       </tr>

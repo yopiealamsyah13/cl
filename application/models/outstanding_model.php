@@ -87,4 +87,17 @@
             {
                   $this->db->insert('db_outstanding_payments', $data);
             }
+
+            ////baru
+            //function limit_new($cust,$limit,$per_page)
+            //{
+            //      $this->otherdb = $this->load->database('otherdb', TRUE);
+            //
+            //      $query = $this->db->query("SELECT id_outstanding,input_date,id_customer,id_user,invoice_number,invoice_amount,outstanding_amount,po_number,remark 
+            //                                    FROM cl.db_outstandings a
+            //                                    JOIN crrm2.db_customers b ON a.id_customer=b.id_customer
+            //                                    ORDER BY a.id_customer ASC
+            //                                    LIMIT ".$limit." OFFSET ".$per_page);
+            //      return $query->result();
+            //}
       }

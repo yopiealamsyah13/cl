@@ -1,1 +1,1 @@
-<?php if($data->row()->total>0){?><?php echo $data->row()->total;?><?php }?>
+<?php if($data->row()->total>0 and $data->row()->total<100){ echo $data->row()->total; }elseif($data->row()->total>99){ echo "99 +";}?>

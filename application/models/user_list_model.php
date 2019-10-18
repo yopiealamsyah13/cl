@@ -142,5 +142,11 @@
                   $this->db->where('id',$id);
                   return $this->db->get();
             }
+
+            function change_password($id,$data)
+            {
+                  $this->db->where('id',$id);
+                  $this->db->update('db_users',$data);
+            }
         }        
         

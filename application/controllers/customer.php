@@ -27,6 +27,8 @@ class Customer extends CI_Controller {
 
         $tot = $this->customer_model->all($name);
         $data['name'] = $this->customer_model->limit($name,$limit,$per_page);
+        $data['data'] = $this->customer_model->get_data();
+        $data['outstanding'] = $this->customer_model->get_outstanding();
 
         $pagination['page_query_string']  = TRUE;    
         $pagination['base_url']           = site_url().'/customer?term='.$name;

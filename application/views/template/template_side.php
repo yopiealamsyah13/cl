@@ -90,7 +90,7 @@
     $(document).ready(function() {
         $.ajaxSetup({ cache: false });
         setInterval(function() {
-            $('#totalrequest').load('<?php echo site_url() ?>/request/total_pending');
+            $('#totalrequest').load('<?php echo site_url() ?>/request/total_pending_notif');
         }, 1000);
     });
 </script>

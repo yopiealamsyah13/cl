@@ -1,11 +1,22 @@
 <style>
-  .img-circle{
-    cursor:pointer;
+  .user-header:hover .caption-imgc {
+    visibility: visible;
+    opacity: 2;
   }
 
-  .img-circle:hover{
-    box-shadow: 0 0 2px 1px rgba(120, 140, 186, 0.5);
-    opacity: 0.5;
+  .caption-imgc{
+    color:#333;
+    position:absolute;
+    top: 55px;
+    bottom: 120px;
+    border-bottom-left-radius: 100px;
+    border-bottom-right-radius:100px;
+    left: 98px;
+    right: 98px;
+    visibility: hidden;
+    opacity: 0;
+    background-color:rgba(0, 0, 0, 0.6);
+    cursor:pointer;
   }
 </style>
 
@@ -26,7 +37,6 @@
 
       <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
-          
           <!-- Notifications: style can be found in dropdown.less -->
           <li class="dropdown notifications-menu" id="show">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" >
@@ -51,14 +61,18 @@
             <ul class="dropdown-menu">
               <!-- User image -->
               <li class="user-header">
-                <img src="<?php echo base_url(); ?>assets/photo/<?php echo $this->acl->get_user()->photo;?>" id="picture" class="img-circle">
-                <p>
-                  <?php echo $this->acl->get_user()->name_user;?>
-                </p>
+                    <img src="<?php echo base_url(); ?>assets/photo/<?php echo $this->acl->get_user()->photo;?>" class="img-circle">
+                  <p class="caption-imgc" id="change"><small>Change</small></p>
+                  <p>
+                    <?php echo $this->acl->get_user()->name_user;?>
+                  </p>
               </li>
               <!-- Menu Body -->
               <!-- Menu Footer-->
               <li class="user-footer">
+                <div class="pull-left">
+                  <a href="<?php echo site_url('user_list/change_password'); ?>" class="btn btn-default btn-flat">Change Password</a>
+                </div>
                 <div class="pull-right">
                   <a href="<?php echo site_url('logout'); ?>" class="btn btn-default btn-flat">Sign out</a>
                 </div>
@@ -71,8 +85,8 @@
     </nav>
   </header>
 
-  <div class="modal fade" id="modal-default">
-    <div class="modal-dialog">
+  <div class="modal fade" tab-index="-1" id="modal-default" aria-hidden="true" role="dialog">
+    <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -82,11 +96,11 @@
         <form method="post" action="<?php echo site_url('welcome/change_picture'); ?>" enctype="multipart/form-data">
           <div class="modal-body">
             <div class="row">
-              <div class="col-md-3">
-                <input name="old" type="hidden" value="<?php echo $this->acl->get_user()->photo;?>">
-                <img id="blah" class="crop" src="<?php echo base_url(); ?>assets/photo/<?php echo $this->acl->get_user()->photo;?>" alt="your image" height="130" width="130" style="border:1px solid #ddd;" />
+              <div class="col-md-12">
+                <div id="jcrop"></div>
+                <input name="old" type="hidden" value="<?php echo $this->acl->get_user()->photo;?>" style="display:none;">
               </div>
-              <div class="col-md-9">
+              <div class="col-md-12">
                 <label for="exampleInputFile">Choose File</label>
                 <input type="file" id="exampleInputFile" class="form-control" name="file_upload">
                 <input type="hidden" id="x" name="x" />
@@ -98,7 +112,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="reset" class="btn btn-default" data-dismiss="modal">Close</button>
             <button type="submit" class="btn btn-primary">Save changes</button>
           </div>
         </form>
@@ -130,41 +144,47 @@
 
 
 <script>
-  $(document).ready(function(){
-    $('#picture').on('click',function(){
+
+    $('#change').on('click',function(){
       $('#modal-default').modal('toggle');
     });
 
+    var picture_width;
+    var picture_height;
+    var crop_max_width = 354;
+    var crop_max_height = 354;
+
+    $("#exampleInputFile").change(function() {
+      readURL(this);
+    });
+
+    
     function readURL(input) {
       if (input.files && input.files[0]) {
         var reader = new FileReader();
-        
-        reader.onload = function(e) {
-          $('#blah').attr('src', e.target.result);
-          $('.crop').Jcrop({
+        reader.onload = function (e) {
+          $("#jcrop, #preview").html("").append("<img src=\""+e.target.result+"\" alt=\"\" />");
+          picture_width = $("#preview img").width();
+          picture_height = $("#preview img").height();
+          $("#jcrop  img").Jcrop({
             onSelect: updateCoords,
-            bgOpacity:   .4,
-            setSelect:   [ 100, 100, 50, 50 ],
-            aspectRatio: 16 / 9
-        })
+            onChange: updateCoords,
+            boxWidth: crop_max_width,
+            boxHeight: crop_max_height,
+            setSelect: [100,100,354,354],
+            aspectRatio : 1
+          });
         }
-        
         reader.readAsDataURL(input.files[0]);
       }
     }
 
-    $("#exampleInputFile").change(function() {
-      consol.log(this);
-      readURL(this);
-    });
-
     function updateCoords(c)
     {
-      console.log(c);
       $('#x').val(c.x);
       $('#y').val(c.y);
       $('#w').val(c.w);
       $('#h').val(c.h);
     }
-  })
+
   </script>

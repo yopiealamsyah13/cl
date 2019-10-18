@@ -2,13 +2,14 @@
   <h1>ADD REQUEST</h1>
 </section>
 <section class="content">
-<div class="box box-primary">
+  <div class="box box-primary">
         <form name="form-validate" id="addreq" enctype="multipart/form-data" class="form-horizontal" method="post" action="<?php echo site_url(); ?>/request/add_request">
         <div class="box-body">
 
+        <div class="col-md-6">
           <div class="form-group form-group-sm">
             <label for="credit_limit" class="col-sm-2 control-label">Status :</label>
-              <div class="col-sm-4">
+              <div class="col-sm-10">
                 <div class="radio">
                   <label>
                     <input type="radio" name="status_customer" checked id="yes-top">
@@ -26,7 +27,7 @@
 
           <div class="form-group form-group-sm">
             <label for="id_customer" class="col-sm-2 control-label">Customer :</label>
-            <div class="col-sm-4">
+            <div class="col-sm-10">
               <select class="form-control select2" name="id_customer" style="width: 100%;">
                 <option value="">-- Select --</option>
                 <?php foreach ($customer->result() as $rowc) {?>
@@ -39,7 +40,7 @@
 
           <div id="top" class="form-group form-group-sm">
             <label for="top" class="col-sm-2 control-label">TOP :</label>
-              <div class="col-sm-4">
+              <div class="col-sm-10">
                 <input type="text" class="form-control" name="top" placeholder="Input TOP" autocomplete="off">
               </div>
           </div>
@@ -47,7 +48,7 @@
 
           <div class="form-group form-group-sm">
             <label for="po_amount" class="col-sm-2 control-label">PO Amount :</label>
-              <div class="col-sm-4">
+              <div class="col-sm-10">
                 <input data-a-dec="," data-a-sep="." type="text" class="po_amount form-control" name="po_amount" placeholder="Input Amount" autocomplete="off">
               </div>
           </div>
@@ -55,20 +56,23 @@
 
           <div class="form-group">
             <label for="requested_note" class="col-sm-2 control-label">Note :</label>
-              <div class="col-sm-4">
+              <div class="col-sm-10">
                 <textarea rows="5" class="form-control" name="requested_note"></textarea>
               </div>
           </div>
           <span class="help-block"><?php echo form_error('requested_note');?></span>
+        </div>
 
-          <div class="form-group">
+        <div class="col-md-6">
+          <div class="form-group form-group-sm">
             <label for="file" class="col-sm-2 control-label">File :</label>
-              <div class="col-sm-4">
+              <div class="col-sm-10">
                 <div>
                   <input type="file" class="files form-control" name="files[]" multiple>
                 </div>
               </div>
           </div>
+        </div>
 
         </div>
         <div class="box-footer">

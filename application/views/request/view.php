@@ -28,7 +28,7 @@ $id_role = $this->session->userdata('id_role');
 </style>
 
 <section class="content-header">
-  <h1>[<?php echo $baris->id_request;?>] <?php echo $customer->row()->name_customer;?></h1>
+<h1>[<?php echo $baris->id_request;?>] <?php if($customer->row()->name_entity!='Pte Ltd' and $customer->row()->name_entity!='Ltd' and $customer->row()->name_entity!='GmbH & Co. KG' and $customer->row()->name_entity!='Other' and $customer->row()->name_entity!='Perseorangan'){ echo $customer->row()->name_entity;}?> <?php echo strtoupper($customer->row()->name_customer);?> <?php if($customer->row()->name_entity=='Pte Ltd' or $customer->row()->name_entity=='Ltd' or $customer->row()->name_entity=='GmbH & Co. KG'){ echo strtoupper($customer->row()->name_entity);}?> <?php foreach($customer->result() as $rowc){if($baris->id_customer==$rowc->id_customer){if($rowc->status_existing=='1'){?><i class="fa fa-check text-success"></i><?php }}}?></h1>
 </section>
 <section class="content">
 <div class="row">
@@ -37,7 +37,7 @@ $id_role = $this->session->userdata('id_role');
       <div class="box-body">
         <div class="pull-right">
           <div class="btn-group">
-            <a type="button" class="btn btn-primary btn-sm" <?php if($baris->id_request_status!='7'){?>href="<?php echo site_url(); ?>/request/edit_request/<?php echo $baris->id_request; ?>/<?php echo $baris->id_customer;?>"<?php }?> <?php if($baris->id_request_status=='7'){echo "disabled";}?>>Edit</a>
+            <a type="button" class="btn btn-primary btn-sm" <?php if($baris->id_request_status!='3' and $baris->id_request_status!='5' and $baris->id_request_status!='7'){?>href="<?php echo site_url(); ?>/request/edit_request/<?php echo $baris->id_request; ?>/<?php echo $baris->id_customer;?>"<?php }?> <?php if($baris->id_request_status=='3' or $baris->id_request_status=='5' or $baris->id_request_status=='7'){echo "disabled";}?>>Edit</a>
               <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown">
                 <span class="caret"></span>
                 <span class="sr-only">Toggle Dropdown</span>
@@ -82,7 +82,9 @@ $id_role = $this->session->userdata('id_role');
         ?>
         <p>
           <a href="<?php echo base_url();?>myfile/<?php echo $rowf->file_name; ?>" target="_blank"><i class="fa fa-paperclip"></i> <?php echo $rowf->file_name;?> <i><?php if($rowf->status_confidential=='1'){echo "[confidential]";} ?></i></a>
+          <?php if($baris->id_request_status != '7'){?>
           <span class="text-muted pull-right"><a href="<?php echo site_url(); ?>/request/delete_attachment/<?php echo $baris->id_request; ?>/<?php echo $rowf->id_request_file; ?>/<?php echo $rowf->file_name; ?>/<?php echo $baris->id_customer; ?>" onClick='return confirm("Are you sure?")'><i class="fa fa-trash"></i></a></span>
+          <?php } ?>
         </p>
         <?php }?>
         <?php } else {echo "No Attachment";} ?>
@@ -115,27 +117,77 @@ $id_role = $this->session->userdata('id_role');
             </div>
             <!-- /.box-header -->
             <div class="scroll-comment">
-              <div class="box-footer box-comments">
-                <div class="box-comment" id="comment">
+            <!-- <div class="box-footer box-comments" id="comment"></div> -->
+            <div class="box-footer box-comments">
+              <?php 
+                if(count($comment->result()) > 0) {
+              ?>
+              <?php foreach($comment->result() as $rowc){ ?>
+              <div class="box-comment">
+                <!-- User image -->
+                <img class="img-circle img-sm" src="<?php echo base_url(); ?>assets/photo/<?php foreach($user->result() as $rowu){if($rowc->id_user==$rowu->id){echo $rowu->photo;}}?>">
+                <div class="comment-text">
+                      <span class="username">
+                        <?php foreach($user->result() as $rowu){if($rowc->id_user==$rowu->id){echo $rowu->name_user;}}?>
+                        <span class="text-muted pull-right">
+                          <?php 
+                            date_default_timezone_set('Asia/Jakarta');
+                            $now = new DateTime('now');  //mengambil tanggal sekarang
+                            $datec = new DateTime($rowc->date_comment); //mengambil tanggal data di input
+                            $diff = $now->diff($datec);
+                           
+                                if($diff->format('%a')>2){ //jika perbedaan antara tanggal data diinput dan dibutuhkan lebih dari 2 dengan format hari
+                                  echo date('d M y',strtotime($rowc->date_comment))." at ".date('H:i',strtotime($rowc->date_comment));
+                                }elseif($diff->format('%a')>=1){ //jika perbedaan antara tanggal data diinput dan dibutuhkan tidak lebih dari 1 hari yang lalu
+                                  echo 'yesterday at '.date('H:i',strtotime($rowc->date_comment));
+                                }elseif($diff->format('%h')>0) { //jika perbedaan antara tanggal data diinput dan dibutuhkan lebih dari 0 dengan format jam
+                                  echo $diff->format('%h hrs ago');
+                                }elseif($diff->format('%i')>0) { //jika perbedaan antara tanggal data diinput dan dibutuhkan lebih dari 0 dengan format menit
+                                  echo $diff->format('%i mins ago');
+                                }elseif($diff->format('%s')>0) { //jika perbedaan antara tanggal data diinput dan dibutuhkan lebih dari 0 dengan format menit
+                                  echo $diff->format('%s secs ago');
+                                }
+                          ?>
+                          <?php if($baris->id_request_status!='7'){ ?>
+                          <?php if($rowc->id_user==$id_user){?><a href="<?php echo site_url(); ?>/request/delete_comment/<?php echo $baris->id_request; ?>/<?php echo $rowc->id_comment; ?>/<?php echo $baris->id_customer; ?>" onClick='return confirm("Are you sure?")'><i class="fa fa-trash"></i></a><?php }}?></span>
+                      </span><!-- /.username -->
+                  <?php if($rowc->status_confidential=='1'){?><i class="fa fa-lock"></i><?php } ?> <?php echo $rowc->note_comment; ?>
                 </div>
+                <!-- /.comment-text -->
               </div>
+              <!-- /.box-comment -->
+              <?php } ?>
+              <?php } else {?>
+                No Comment
+              <?php } ?>
+
+            </div>
             </div>
             <!-- /.box-footer -->
+            <?php if($baris->id_request_status!='7'){ ?>
+            <!-- /.box-footer -->
             <div class="box-footer">
-              <form name="form-validate" class="form-horizontal" method="post">
+              <form name="form-validate" enctype="multipart/form-data" class="form-horizontal" method="post" action="<?php echo site_url(); ?>/request/add_comment/<?php echo $baris->id_request; ?>/<?php echo $baris->id_customer; ?>/<?php echo $baris->id_request_status; ?>">
                 <img class="img-responsive img-circle img-sm" src="<?php echo base_url(); ?>assets/photo/<?php echo $this->acl->get_user()->photo;?>">
                 <!-- .img-push is used to add margin to elements next to floating images -->
                 <div class="img-push">
                   <div class="input-group input-group-sm">
-                    <input type="text" class="form-control input-sm" id="note_comment" name="note_comment" placeholder="Write your comment here" autocomplete="off">
-                    <span class="input-group-btn">
-                      <button type="submit" id="save_comment" class="btn btn-primary btn-flat">Send</button>
+                    <input type="text" class="form-control input-sm" name="note_comment" placeholder="Write your comment here" autocomplete="off">
+                    <input type="hidden" name="status_confidential" value="0">
+                    <?php if($id_role!='10'){?>
+                    <span class="input-group-addon">
+                      <input type="checkbox" name="status_confidential" value="1"> Confidential
                     </span>
-                  </div>
+                    <?php } ?>
+                    <span class="input-group-btn">
+                      <button type="submit" class="btn btn-primary btn-flat">Send</button>
+                    </span>
+              </div>
                 </div>
               </form>
             </div>
             <!-- /.box-footer -->
+            <?php } ?>
           </div>
           <!-- /.box -->
 
@@ -147,8 +199,9 @@ $id_role = $this->session->userdata('id_role');
             function tampil_comment()
             {
               var id = '<?php echo $this->uri->segment(3); ?>';
-              var idu =  '<?php echo $this->session->userdata("id");?>'
-              var now = new Date()
+              var idu =  '<?php echo $this->session->userdata("id");?>';
+              var ids = '<?php echo $data->row()->id_request_status;?>';
+              var now = new Date();
               //setInterval(function(){
                 $.ajax({
                 type: 'ajax',
@@ -178,9 +231,11 @@ $id_role = $this->session->userdata('id_role');
                                 html += '</span>'+
                                 data[i].note_comment+
                                 '<span class="text-muted pull-right">';
+                                if(ids != '7'){
                                   if(idu == data[i].id_user){
                                     html += '<a href="javascript:;" class="delete_comment" data="'+data[i].id_comment+'"><i class="fa fa-trash"></i></a></span>';
                                   }
+                                }
                                 html +='</span>'+
                                 '</div>'+
                             '</div>';
@@ -212,15 +267,16 @@ $id_role = $this->session->userdata('id_role');
             });
 
             //insert comment
-            $('#save_comment').on('click',function(){
+            $('#sav_comment').on('click',function(){
                 var idr = '<?php echo $baris->id_request; ?>';
                 var idc = '<?php echo $baris->id_customer; ?>';
                 var note_comment = $('#note_comment').val();
+                var status_confidential = $('#status_confidential').val();
                 $.ajax({
                   type:'POST',
                   url:'<?php echo site_url("request/add_comment")?>/'+idr+'/'+idc,
                   dataType:'JSON',
-                  data:{note_comment:note_comment},
+                  data:{note_comment:note_comment,status_confidential:status_confidential},
                   success:function(data){
                     tampil_comment();
                   },
@@ -264,7 +320,7 @@ $id_role = $this->session->userdata('id_role');
                                 <h5 class="timeline-header no-border"><b><?php echo $rowt->name_user;?></b> <?php if($rowt->id_request_status=='1'){echo "create <b>".$rowt->name_request_status."</b> request";}else{echo "change state to <b>".$rowt->name_request_status."</b>";} ?></h5>
                             </div>
                           </li>
-                          <?php } ?>
+                            <?php } ?>
                           <?php } else {?>
                             <li>No Information</li>
                           <?php } ?>
@@ -298,7 +354,7 @@ $id_role = $this->session->userdata('id_role');
                 <label for="file_upload" class="col-sm-3 control-label">Select File :</label>
                   <div class="col-sm-6">
                     <input type="file" class="form-control" name="file_upload">
-                    <p>* Hanya file berupa .pdf/.xls/.xlsx </p>
+                    <p>* Hanya file berupa .pdf/.xls/.xlsx / .jpg </p>
                   </div>
               </div>
               

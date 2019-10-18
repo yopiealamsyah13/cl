@@ -6,55 +6,84 @@
                   parent::__construct();
             }
 
-            function all()
+            function all($area,$bulan,$tahun)
             {
                   $id_user = $this->session->userdata('id');
                   $id_role = $this->session->userdata('id_role');
-                  $this->otherdb = $this->load->database('otherdb', TRUE);
+                  $id_area = $this->session->userdata('id_area');
+
+
                   $this->db->select('*');
                   $this->db->from('db_requests a');
                   $this->db->join('db_request_status b','a.id_request_status=b.id_request_status');
-                  $this->otherdb->join('db_customers c','a.id_customer=c.id_customer');
-                  $this->db->order_by('a.requested_date','DESC');
-
-                  if($id_role=='1')
-                  {
-                        $this->db->where('a.id_request_status','5');
-                  }
-
-                  if($id_role=='7')
-                  {
-                        $this->db->where('a.id_request_status !=','7');
-                  }
-
-                  if($id_role=='8' or $id_role=='9')
-                  {
-                        $this->db->where('a.id_request_status !=','1');
-                        $this->db->where('a.id_request_status !=','7');
-                  }
-
-                  if($id_role=='10')
-                  {
-                        $this->db->where('a.id_user',$id_user);
-                  }
-                  
-                  return  $this->db->get();
-            }
-
-            function limit($limit,$per_page,$status,$area)
-            {
-                  $id_user = $this->session->userdata('id');
-                  $id_role = $this->session->userdata('id_role');
-                  $this->otherdb = $this->load->database('otherdb', TRUE);
-                  $this->db->select('*');
-                  $this->db->from('db_requests a');
-                  $this->db->join('db_request_status b','a.id_request_status=b.id_request_status');
-                  //$this->otherdb->join('db_customers c','a.id_customer=c.id_customer');
                   $this->db->join('db_users c','a.id_user=c.id');
                   $this->db->order_by('a.requested_date','DESC');
 
                   if($id_role=='1')
                   {
+                        //if($id_area == '5')
+                        //{
+                        //      $this->db->where('c.id_area =','5');
+                        //}
+
+                        $this->db->where('a.id_request_status !=','7');
+                        
+                  }
+
+                  if($id_role=='7')
+                  {
+                        $this->db->where('a.id_request_status !=','7');
+                  }
+
+                  if($id_role=='8' or $id_role=='9')
+                  {
+                        //$this->db->where('a.id_request_status !=','1');
+                        $this->db->where('a.id_request_status !=','7');
+                  }
+
+                  if($id_role=='10')
+                  {
+                        $this->db->where('a.id_user',$id_user);
+                        $this->db->where('a.id_request_status !=','7');
+                  }
+
+                  if($area!='')
+                  {
+                        $this->db->where('c.id_area',$area);
+                  }
+
+                  if($bulan != '')
+                  {
+                        $this->db->where('month(a.requested_date)',$bulan);
+                  }
+                  
+                  if($tahun != '')
+                  {
+                        $this->db->where('year(a.requested_date)',$tahun);
+                  }
+                  
+                  return  $this->db->get();
+            }
+
+            function limit($limit,$per_page,$area,$bulan,$tahun)
+            {
+                  $id_user = $this->session->userdata('id');
+                  $id_role = $this->session->userdata('id_role');
+                  $id_area = $this->session->userdata('id_area');
+
+                  $this->db->select('*');
+                  $this->db->from('db_requests a');
+                  $this->db->join('db_request_status b','a.id_request_status=b.id_request_status');
+                  $this->db->join('db_users c','a.id_user=c.id');
+                  $this->db->order_by('a.requested_date','DESC');
+
+                  if($id_role=='1')
+                  {
+                        //if($id_area == '5')
+                        //{
+                        //      $this->db->where('c.id_area =','5');
+                        //}
+
                         $this->db->where('a.id_request_status !=','7');
                   }
 
@@ -65,23 +94,29 @@
 
                   if($id_role=='8' or $id_role=='9')
                   {
-                        $this->db->where('a.id_request_status !=','1');
+                        //$this->db->where('a.id_request_status !=','1');
                         $this->db->where('a.id_request_status !=','7');
                   }
 
                   if($id_role=='10')
                   {
                         $this->db->where('a.id_user',$id_user);
+                        $this->db->where('a.id_request_status !=','7');
                   }
                   
                   if($area!='')
                   {
                         $this->db->where('c.id_area',$area);
                   }
-
-                  if($status != '')
+                  
+                  if($bulan != '')
                   {
-                        $this->db->where('a.id_request_status',$status);
+                        $this->db->where('month(a.requested_date)',$bulan);
+                  }
+                  
+                  if($tahun != '')
+                  {
+                        $this->db->where('year(a.requested_date)',$tahun);
                   }
        
                   $this->db->limit($limit,$per_page);
@@ -134,9 +169,16 @@
 
             function get_comment($id)
             {
+                  $id_role = $this->session->userdata('id_role');
                   $this->db->select('*');
                   $this->db->from('db_comment');
                   $this->db->where('id_request',$id);
+
+                  if($id_role=='10')
+                  {
+                        $this->db->where('status_confidential','0');
+                  }
+
                   $this->db->order_by('date_comment','ASC');
                   return $this->db->get();
             }
@@ -196,6 +238,7 @@
             function get_file($id)
             {
                   $id_role = $this->session->userdata('id_role');
+                  
                   $this->db->select('*');
                   $this->db->from('db_request_file');
                   $this->db->where('id_request',$id);
@@ -213,7 +256,8 @@
                   $this->db->where('id_request_file',$ida);
                   $this->db->delete('db_request_file');
 
-                  $file = "./myfile/$idf";
+                  $file = FCPATH."myfile/".$idf;
+
                   unlink($file);
             }
 
@@ -227,9 +271,10 @@
             {
                   $this->otherdb = $this->load->database('otherdb', TRUE);
 
-                  $this->otherdb->select('id_customer,name_customer,name_user,project_code,status_existing,mobile_phone,credit_limit,outstanding_over');
+                  $this->otherdb->select('id_customer,name_customer,name_user,project_code,status_existing,mobile_phone,credit_limit,outstanding_over,name_entity');
                   $this->otherdb->from('db_customers a');
                   $this->otherdb->join('db_users b','a.id_user=b.id');
+                  $this->otherdb->join('db_business_entity c','a.id_entity=c.id_entity');
                   $this->otherdb->where('a.id_customer',$idc);
                   return $this->otherdb->get();
             }
@@ -241,13 +286,13 @@
                   $id_area = $this->session->userdata('id_area');
                   $id_role = $this->session->userdata('id_role');
 
-                  $this->otherdb->select('id_customer,name_customer,name_user');
+                  $this->otherdb->select('id_customer,name_customer,name_user,name_entity');
                   $this->otherdb->from('db_customers a');
                   $this->otherdb->join('db_users b','a.id_user=b.id');
+                  $this->otherdb->join('db_business_entity c','a.id_entity=c.id_entity');
                   $this->otherdb->where('a.status_delete','0');
+                  $this->otherdb->where('b.id_company !=','6');
                   $this->otherdb->order_by('a.name_customer','ASC');
-
-                  
 
                   if($id_role=='10')
                   {
@@ -263,27 +308,35 @@
             function get_all_customer()
             {
                   $this->otherdb = $this->load->database('otherdb', TRUE);
-                  $this->otherdb->select('id_customer,name_customer,name_user,project_code,status_existing,mobile_phone,alias_company');
+                  $this->otherdb->select('id_customer,name_customer,name_user,project_code,status_existing,mobile_phone,name_entity,alias_company');
                   $this->otherdb->from('db_customers a');
                   $this->otherdb->join('db_users b','a.id_user=b.id');
-                  $this->otherdb->join('db_companies c','b.id_company=c.id_company');
+                  $this->otherdb->join('db_business_entity c','a.id_entity=c.id_entity');
+                  $this->otherdb->join('db_companies d','b.id_company=d.id_company');
                   $this->otherdb->where('a.status_delete','0');
+                  $this->otherdb->where('b.id_company !=','6');
                   $this->otherdb->order_by('a.name_customer','ASC');
                   return $this->otherdb->get();
             }
 
             function get_user()
             {
-                  $this->db->select('id,name_user,photo,notification_id');
+                  $this->db->select('id,name_user,photo');
                   $this->db->from('db_users');
                   return $this->db->get();
             }
 
-            function get_total_pending()
+            function get_total_pending($bulan,$tahun)
             {
+                  
+                  date_default_timezone_set('Asia/Jakarta');
+                  $bulan_now = date('m');
+                  $tahun_now = date('Y');
+
                   $id_user = $this->session->userdata('id');
                   $id_role = $this->session->userdata('id_role');
-                  $this->db->select('count(id_request) as total');
+
+                  $this->db->select('count(id_request) as total,month(requested_date) as bulan,year(requested_date) as tahun');
                   $this->db->from('db_requests');
 
                   if($id_role=='1')
@@ -308,14 +361,27 @@
                         $this->db->where('id_request_status !=','7');
                   }
 
+                  if($bulan!='' and $tahun != '')
+                  {
+                        $this->db->where('month(requested_date)',$bulan);
+                        $this->db->where('year(requested_date)',$tahun);
+                  }else{
+                        $this->db->where('month(requested_date)',$bulan_now);
+                        $this->db->where('year(requested_date)',$tahun_now);
+                  }
+
                   return $this->db->get();
             }              
 
-            function get_total_close()
+            function get_total_close($bulan,$tahun)
             {
+                  date_default_timezone_set('Asia/Jakarta');
+                  $bulan_now = date('m');
+                  $tahun_now = date('Y');
+
                   $id_user = $this->session->userdata('id');
                   $id_role = $this->session->userdata('id_role');
-                  $this->db->select('count(id_request) as total');
+                  $this->db->select('count(id_request) as total,month(requested_date) as bulan,year(requested_date) as tahun');
                   $this->db->from('db_requests');
                   $this->db->where('id_request_status','7');
 
@@ -324,14 +390,27 @@
                         $this->db->where('id_user',$id_user);
                   }
 
+                  if($bulan!='' and $tahun != '')
+                  {
+                        $this->db->where('month(requested_date)',$bulan);
+                        $this->db->where('year(requested_date)',$tahun);
+                  }else{
+                        $this->db->where('month(requested_date)',$bulan_now);
+                        $this->db->where('year(requested_date)',$tahun_now);
+                  }
+
                   return $this->db->get();
             }
 
-            function get_total_request()
+            function get_total_request($bulan,$tahun)
             {
+                  date_default_timezone_set('Asia/Jakarta');
+                  $bulan_now = date('m');
+                  $tahun_now = date('Y');
                   $id_user = $this->session->userdata('id');
                   $id_role = $this->session->userdata('id_role');
-                  $this->db->select('count(id_request) as total');
+
+                  $this->db->select('count(id_request) as total,month(requested_date) as bulan,year(requested_date) as tahun');
                   $this->db->from('db_requests');
 
                   if($id_role=='10')
@@ -339,48 +418,95 @@
                         $this->db->where('id_user',$id_user);
                   }
 
+                  if($bulan != '')
+                  {
+                        $this->db->where('month(requested_date)',$bulan);
+                  }else{
+                        $this->db->where('month(requested_date)',$bulan_now);
+                  }
+
+                  if($tahun != '')
+                  {
+                        $this->db->where('year(requested_date)',$tahun);
+                  }else{
+                        $this->db->where('year(requested_date)',$tahun_now);
+                  }
+
                   return $this->db->get();
             }
 
-            function get_total_by_area()
+            function get_total_by_area($bulan,$tahun)
             {
-                  $this->db->select('name_user, name_company, name_area, alias_company, count(a.id_request) as total');
+                  date_default_timezone_set('Asia/Jakarta');
+                  $bulan_now = date('m');
+                  $tahun_now = date('Y');
+                  
+                  $this->db->select('b.id_area, name_company, name_area, alias_company, count(a.id_request) as total');
                   $this->db->from('db_requests a');
                   $this->db->join('db_users b','a.id_user=b.id');
                   $this->db->join('db_companies c','b.id_company=c.id_company');
                   $this->db->join('db_company_areas d','b.id_area=d.id_area');
-                  $this->db->group_by('a.id_user');
+                  $this->db->group_by('b.id_area');
+
+                  if($bulan != '')
+                  {
+                        $this->db->where('month(requested_date)',$bulan);
+                  }else{
+                        $this->db->where('month(requested_date)',$bulan_now);
+                  }
+
+                  if($tahun != '')
+                  {
+                        $this->db->where('year(requested_date)',$tahun);
+                  }else{
+                        $this->db->where('year(requested_date)',$tahun_now);
+                  }
 
                   return $this->db->get();
             }
 
-            function all_history()
+            function all_history($area,$bulan,$tahun)
             {
                   $id_user = $this->session->userdata('id');
                   $id_role = $this->session->userdata('id_role');
+                  $id_area = $this->session->userdata('id_area');
+
                   $this->db->select('*');
                   $this->db->from('db_requests a');
                   $this->db->join('db_request_status b','a.id_request_status=b.id_request_status');
-                  $this->db->order_by('a.requested_date','DESC');
+                  $this->db->join('db_users c','a.id_user=c.id');
+                  $this->db->order_by('a.update_date','DESC');
                   $this->db->where('a.id_request_status','7');
 
                   if($id_role=='10')
                   {
-                        $this->db->where('id_user',$id_user);   
+                        $this->db->where('a.id_user',$id_user);   
                   }
-                  
+
+                  if($area != '') {
+                        $this->db->where('c.id_area',$area);
+                  }
+
+                  if($bulan!='' and $tahun!='')
+                  {
+                        $this->db->where('month(a.requested_date)',$bulan);
+                        $this->db->where('year(a.requested_date)',$tahun);
+                  }
+
                   return  $this->db->get();
             }
 
-            function limit_history($limit,$per_page,$cari)
+            function limit_history($limit,$per_page,$area,$bulan,$tahun)
             {
-                  $this->otherdb = $this->load->database('otherdb', TRUE);
                   $id_user = $this->session->userdata('id');
                   $id_role = $this->session->userdata('id_role');
+                  $id_area = $this->session->userdata('id_area');
+
                   $this->db->select('*');
                   $this->db->from('db_requests a');
                   $this->db->join('db_request_status b','a.id_request_status=b.id_request_status');
-                  $this->db->order_by('a.requested_date','DESC');
+                  $this->db->join('db_users c','a.id_user=c.id');
+                  $this->db->order_by('a.update_date','DESC');
                   $this->db->where('a.id_request_status','7');
 
                   if($id_role=='10')
@@ -388,15 +514,107 @@
                         $this->db->where('id_user',$id_user);   
                   }
 
-                  if($cari!="")
+                  if($area != '') {
+                        $this->db->where('c.id_area',$area);
+                  }
+
+                  if($bulan!='' and $tahun!='')
                   {
-                        $this->db->like('id_request',$cari);
+                        $this->db->where('month(a.requested_date)',$bulan);
+                        $this->db->where('year(a.requested_date)',$tahun);
                   }
        
                   $this->db->limit($limit,$per_page);
                   return  $this->db->get();
             }
 
+            //baru 26/09/2019
+            function all_history_search($area,$bulan,$tahun,$cari)
+            {
+                  $id_user = $this->session->userdata('id');
+                  $id_role = $this->session->userdata('id_role');
+                  $id_area = $this->session->userdata('id_area');
+
+                  $this->db->select('a.id_request,a.id_user,a.id_customer,credit_limit,top,max_top,po_amount,requested_note,requested_date,a.id_request_status,name_user,name_request_status,note_comment,update_date,update_by');
+                  $this->db->from('db_requests a');
+                  $this->db->join('db_request_status b','a.id_request_status=b.id_request_status');
+                  $this->db->join('db_users c','a.id_user=c.id');
+                  $this->db->join('db_comment d','a.id_request=d.id_request');
+                  $this->db->where('a.id_request_status','7');
+
+                  if($id_role=='10')
+                  {
+                        $this->db->where('a.id_user',$id_user);   
+                  }
+
+                  if($area != '') 
+                  {
+                        $this->db->where('c.id_area',$area);
+                  }
+
+                  if($bulan!='' and $tahun!='')
+                  {
+                        $this->db->where('month(a.requested_date)',$bulan);
+                        $this->db->where('year(a.requested_date)',$tahun);
+                  }
+
+                  if($cari != '')
+                  {
+                        //$this->db->where('d.note_comment LIKE','%'.$cari.'%');
+                        //$this->db->or_where('a.id_request LIKE','%'.$cari.'%');
+                        $this->db->like('d.note_comment',$cari);
+                        $this->db->or_like('a.id_request',$cari);
+                  }
+
+                  
+                  $this->db->order_by('a.update_date','DESC');
+                  $this->db->group_by('a.id_request');
+                  return  $this->db->get();
+            }
+
+            function limit_history_search($limit,$per_page,$area,$bulan,$tahun,$cari)
+            {
+                  $id_user = $this->session->userdata('id');
+                  $id_role = $this->session->userdata('id_role');
+                  $id_area = $this->session->userdata('id_area');
+
+                  $this->db->select('a.id_request,a.id_user,a.id_customer,credit_limit,top,max_top,po_amount,requested_note,requested_date,a.id_request_status,name_user,name_request_status,note_comment,update_by,update_date');
+                  $this->db->from('db_requests a');
+                  $this->db->join('db_request_status b','a.id_request_status=b.id_request_status');
+                  $this->db->join('db_users c','a.id_user=c.id');
+                  $this->db->join('db_comment d','a.id_request=d.id_request');
+                  $this->db->where('a.id_request_status','7');
+
+                  if($id_role=='10')
+                  {
+                        $this->db->where('a.id_user',$id_user);
+                  }
+
+                  if($area != '') 
+                  {
+                        $this->db->where('c.id_area',$area);
+                  }
+
+                  if($bulan!='' and $tahun!='')
+                  {
+                        $this->db->where('month(a.requested_date)',$bulan);
+                        $this->db->where('year(a.requested_date)',$tahun);
+                  }
+                  
+                  if($cari != '')
+                  {
+                        //$this->db->where('d.note_comment LIKE','%'.$cari.'%');
+                        //$this->db->or_where('a.id_request LIKE','%'.$cari.'%');
+                        $this->db->like('d.note_comment',$cari);
+                        $this->db->or_like('a.id_request',$cari);
+                  }
+
+                  $this->db->order_by('a.update_date','DESC');
+                  $this->db->group_by('a.id_request');
+                  $this->db->limit($limit,$per_page);
+                  return  $this->db->get();
+            }
+            
             function add_notification($data2)
             {
                   $result = $this->db->insert('db_notification',$data2);
@@ -441,7 +659,7 @@
             //baru
             function get_name_request_status($id)
             {
-                  $this->db->select('a.id_request_status,name_request_status');
+                $this->db->select('a.id_request_status,name_request_status');
                 $this->db->from('db_requests a');
                 $this->db->join('db_request_status b','a.id_request_status=b.id_request_status');
                 $this->db->where('id_request',$id);
@@ -453,6 +671,7 @@
             {
                   date_default_timezone_set('Asia/Jakarta');
                   $id_role = $this->session->userdata('id_role');
+                  $id_area = $this->session->userdata('id_area');
                   $now = date('Y-m-d H:i:s');  //mengambil tanggal sekarang
 
                   $this->db->select('a.notification_id,notification_link,photo,notification_label,notification_datetime,notification_read,a.id_user,c.id_customer,notification_reference_id');
@@ -471,6 +690,7 @@
                   if($id_role == 10)
                   {
                         $this->db->where('c.id_user',$id_user);
+                        $this->db->where('a.notification_reference_type !=',4); //agar tidak mendapat notif comment confident
                   }
 
                   if($id_role == 11)
@@ -492,7 +712,7 @@
                   $this->db->where('id_user',$id_user);
                   $query = $this->db->get('db_read_notification');
 
-                  if ($query->num_rows()>0) {
+                  if ($query->num_rows()>0) {   
                         return true;
                   }else{
 
@@ -502,7 +722,6 @@
                         $this->db->where('a.notification_reference_id',$id_request);
                         $this->db->where('a.notification_id not in(SELECT id_notification FROM db_read_notification WHERE id_user ='.$id_user.')',null,false);
                         $query2 = $this->db->get();
-                        //$query2 = $this->get_notification_batch($id_user,$idr);
                         
                         $data = array();
 
@@ -511,7 +730,7 @@
                                     'id_notification' => $value->notification_id,
                                     'id_user' => $id_user,
                                     'id_request' => $id_request,
-                                    'date' =>$date
+                                    'date' => $date
                               );
                         } 
 
@@ -587,6 +806,7 @@
                   if($id_role == 10)
                   {
                         $this->db->where('c.id_user',$id_user);
+                        $this->db->where('a.notification_reference_type !=',4);
                   }
 
                   if($id_role == 11)
@@ -628,6 +848,16 @@
                   return $this->db->get();
             }
 
+            function get_approval_note()
+            {
+                  $this->db->select('id_request, note_comment');
+                  $this->db->from('db_comment');
+                  $this->db->where('id_request_status = 5 or id_request_status = 6');
+                  $this->db->order_by('date_comment','DESC');
+                  $this->db->group_by('id_request');
+                  return $this->db->get();
+            }
+
             function get_list_area()
             {
                   $this->db->select('id_area, name_company, name_area');
@@ -635,5 +865,230 @@
                   $this->db->join('db_company_areas b','a.id_company=b.id_company');
                   $this->db->order_by('name_company','ASC');
                   return $this->db->get();
+            }
+
+            function get_history_request()
+            {
+                  $id_user = $this->session->userdata('id');
+                  $this->db->select('requested_date,count(id_request) as total');
+                  $this->db->from('db_requests');
+                  $this->db->where('id_user',$id_user);
+                  $this->db->where('year(requested_date)','2019');
+                  $this->db->group_by('month(requested_date)');
+                  $this->db->group_by('year(requested_date)');
+
+                  return  $this->db->get();
+            }
+
+            function get_month()
+            {
+                  $this->db->select('month(requested_date) as bulan,requested_date');
+                  $this->db->from('db_requests');
+                  $this->db->group_by('month(requested_date)');
+                  $this->db->order_by('requested_date','DESC');
+                  return $this->db->get();
+            }
+
+            function get_year()
+            {
+                  $this->db->select('year(requested_date) as year');
+                  $this->db->from('db_requests');
+                  $this->db->group_by('year(requested_date)');
+                  $this->db->order_by('requested_date','DESC');
+                  return $this->db->get();
+            }
+
+            //baru 12/10/2019
+            function get_notification_list()
+            {
+                  $this->db->select('notification_reference_id,max(notification_id) as notification_id');
+                  $this->db->from('db_notification a');
+                  $this->db->group_by('notification_reference_id');
+                  $hasil = $this->db->get();
+                  return $hasil->result();
+            }
+
+            function delete_notification($id)
+            {
+                  $this->db->where('notification_reference_id',$id);
+                  $this->db->where('notification_reference_type !=',3);
+                  $this->db->delete('db_notification');
+
+                  $this->db->where('id_request',$id);
+                  $this->db->delete('db_read_notification');
+            }
+
+            //baru 19/09/2019
+            function get_user_closed($bulan,$tahun)
+            {
+                  date_default_timezone_set('Asia/Jakarta');
+                  $bulan_now = date('m');
+                  $tahun_now = date('Y');
+
+                  $this->db->select('name_user,update_by,update_date,count(id_request) as total, month(a.requested_date) as bulan,year(a.requested_date) as tahun');
+                  $this->db->from('db_requests a');
+                  $this->db->join('db_users b','a.update_by=b.id');
+                  $this->db->where('a.id_request_status',7);
+
+                  if($bulan != '')
+                  {
+                        $this->db->where('month(a.requested_date)',$bulan);
+                  }else{
+                        $this->db->where('month(a.requested_date)',$bulan_now);
+                  }
+
+                  if($tahun != '')
+                  {
+                        $this->db->where('year(a.requested_date)',$tahun);
+                  }else{
+                        $this->db->where('year(a.requested_date)',$tahun_now);
+                  }
+
+                  $this->db->group_by('a.update_by');
+                  $this->db->order_by('count(update_by)','DESC');
+                  return $this->db->get();
+            }
+
+            function get_total_pending_notif()
+            {
+                  $id_user = $this->session->userdata('id');
+                  $id_role = $this->session->userdata('id_role');
+                  $this->db->select('count(id_request) as total,month(requested_date) as bulan,year(requested_date) as tahun');
+                  $this->db->from('db_requests');
+
+                  if($id_role=='1')
+                  {
+                        $this->db->where('id_request_status','5');
+                  }
+
+                  if($id_role=='7')
+                  {
+                        $this->db->where('id_request_status !=','7');
+                  }
+
+                  if($id_role=='8' or $id_role=='9')
+                  {
+                        $this->db->where('id_request_status !=','1');
+                        $this->db->where('id_request_status !=','7');
+                  }
+
+                  if($id_role=='10')
+                  {
+                        $this->db->where('id_user',$id_user);
+                        $this->db->where('id_request_status !=','7');
+                  }
+
+                  return $this->db->get();
+            }
+
+            function get_new_request($bulan,$tahun)
+            {
+                  date_default_timezone_set('Asia/Jakarta');
+                  $bulan_now = date('m');
+                  $tahun_now = date('Y');
+
+                  $this->otherdb = $this->load->database('otherdb', TRUE);
+                  
+                  if($bulan != '' && $tahun != ''){
+                  $query = $this->db->query('SELECT id_request,a.id_customer,name_customer,d.id_company,alias_company,a.id_request_status,name_request_status,c.id_area,name_area
+                                                FROM cl.db_requests a 
+                                                JOIN crrm2.db_customers b ON a.id_customer=b.id_customer
+                                                JOIN crrm2.db_users c ON b.id_user=c.id
+                                                JOIN cl.db_companies d ON c.id_company=d.id_company
+                                                JOIN cl.db_request_status e ON a.id_request_status=e.id_request_status
+                                                JOIN cl.db_company_areas f ON c.id_area=f.id_area
+                                                WHERE b.status_delete = 0
+                                                AND b.status_existing = 0
+                                                AND a.id_request_status = 7
+                                                AND month(a.requested_date) ='.$bulan.'
+                                                AND year(a.requested_date) ='.$tahun.'
+                                                ORDER BY a.requested_date DESC');
+                  }else{
+                  $query = $this->db->query('SELECT id_request,a.id_customer,name_customer,d.id_company,alias_company,a.id_request_status,name_request_status,c.id_area,name_area
+                                                FROM cl.db_requests a 
+                                                JOIN crrm2.db_customers b ON a.id_customer=b.id_customer
+                                                JOIN crrm2.db_users c ON b.id_user=c.id
+                                                JOIN cl.db_companies d ON c.id_company=d.id_company
+                                                JOIN cl.db_request_status e ON a.id_request_status=e.id_request_status
+                                                JOIN cl.db_company_areas f ON c.id_area=f.id_area
+                                                WHERE b.status_delete = 0
+                                                AND b.status_existing = 0
+                                                AND a.id_request_status = 7
+                                                AND month(a.requested_date) ='.$bulan_now.'
+                                                AND year(a.requested_date) ='.$tahun_now.'
+                                                ORDER BY a.requested_date DESC');
+
+                  }
+                  
+                  return $query->result();
+
+            }
+
+            function get_new_by_area($bulan,$tahun)
+            {
+                  date_default_timezone_set('Asia/Jakarta');
+                  $bulan_now = date('m');
+                  $tahun_now = date('Y');
+
+                  $this->db->select('d.id_area, c.id_company,name_company, name_area, alias_company,count(a.id_request) as total');
+                  $this->db->from('db_requests a');
+                  $this->db->join('db_users b','a.id_user=b.id');
+                  $this->db->join('db_companies c','b.id_company=c.id_company');
+                  $this->db->join('db_company_areas d','b.id_area=d.id_area');
+                  
+                  if($bulan != '')
+                  {
+                        $this->db->where('month(a.requested_date)',$bulan);
+                  }else{
+                        $this->db->where('month(a.requested_date)',$bulan_now);
+                  }
+
+                  if($tahun != '')
+                  {
+                        $this->db->where('year(a.requested_date)',$tahun);
+                  }else{
+                        $this->db->where('year(a.requested_date)',$tahun_now);
+                  }
+                  
+                  $this->db->group_by('b.id_area');
+                  return $this->db->get();
+            }
+
+            function get_new_customer($bulan,$tahun)
+            {
+                  date_default_timezone_set('Asia/Jakarta');
+                  $bulan_now = date('m');
+                  $tahun_now = date('Y');
+
+                  $this->otherdb = $this->load->database('otherdb', TRUE);
+                  
+                  if($bulan != '' && $tahun != ''){
+                  $query = $this->db->query('SELECT c.id_area,count(a.id_request) as total
+                                                FROM cl.db_requests a 
+                                                JOIN crrm2.db_customers b ON a.id_customer=b.id_customer
+                                                JOIN crrm2.db_users c ON b.id_user=c.id
+                                                WHERE b.status_delete = 0
+                                                AND b.status_existing = 0
+                                                AND a.id_request_status = 7
+                                                AND month(a.requested_date) ='.$bulan.'
+                                                AND year(a.requested_date) ='.$tahun.'
+                                                GROUP BY c.id_area
+                                                ORDER BY a.requested_date DESC');
+                  }else{
+                  $query = $this->db->query('SELECT c.id_area,count(a.id_request) as total
+                                                FROM cl.db_requests a 
+                                                JOIN crrm2.db_customers b ON a.id_customer=b.id_customer
+                                                JOIN crrm2.db_users c ON b.id_user=c.id
+                                                WHERE b.status_delete = 0
+                                                AND b.status_existing = 0
+                                                AND a.id_request_status = 7
+                                                AND month(a.requested_date) ='.$bulan_now.'
+                                                AND year(a.requested_date) ='.$tahun_now.'
+                                                GROUP BY c.id_area
+                                                ORDER BY a.requested_date DESC');
+
+                  }
+                  
+                  return $query->result();
             }
       }

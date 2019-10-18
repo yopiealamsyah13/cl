@@ -29,6 +29,9 @@
                 $data['name'] = $this->outstanding_model->limit($cust,$limit,$per_page);
                 $data['customer'] = $this->outstanding_model->get_customer();
 
+                //baru
+                //$data['list'] = $this->outstanding_model->limit_new($cust,$limit,$per_page);
+
                 $pagination['page_query_string']  = TRUE;    
                 $pagination['base_url']           = site_url().'/outstanding?cust='.$cust;
                 $pagination['total_rows']         = $tot->num_rows();

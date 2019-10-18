@@ -10,32 +10,51 @@
             function all($name)
             {
                   $id_area = $this->session->userdata('id_area');
+                  $id_role = $this->session->userdata('id_role');
+                  $id_area = $this->session->userdata('id_area');
 
-                  $this->otherdb->select('id_customer,name_customer,name_user,credit_limit,outstanding_over');
+                  $this->otherdb->select('id_customer,name_customer,name_user,credit_limit,outstanding_over,status_existing,name_entity');
                   $this->otherdb->from('db_customers a');
                   $this->otherdb->join('db_users b','a.id_user=b.id');
+                  $this->otherdb->join('db_business_entity c','a.id_entity=c.id_entity');
                   $this->otherdb->where('a.status_delete','0');
                   $this->otherdb->order_by('a.name_customer','ASC');
+
+                  if($id_role=='1' && $id_area == '5')
+                  {
+                        $this->otherdb->where('b.id_area','5');
+                  }
+
                   if($name!='')
                   {
                         $this->otherdb->like('a.name_customer',$name);
                   }
+
                   return $this->otherdb->get();
             }
 
             function limit($name,$limit,$per_page)
             {
                   $id_area = $this->session->userdata('id_area');
+                  $id_role = $this->session->userdata('id_role');
 
-                  $this->otherdb->select('id_customer,name_customer,name_user,credit_limit,outstanding_over');
+                  $this->otherdb->select('id_customer,name_customer,name_user,credit_limit,outstanding_over,status_existing,name_entity');
                   $this->otherdb->from('db_customers a');
                   $this->otherdb->join('db_users b','a.id_user=b.id');
+                  $this->otherdb->join('db_business_entity c','a.id_entity=c.id_entity');
                   $this->otherdb->where('a.status_delete','0');
                   $this->otherdb->order_by('a.name_customer','ASC');
+
+                  if($id_role=='1' && $id_area == '5')
+                  {
+                        $this->otherdb->where('b.id_area','5');
+                  }
+
                   if($name!='')
                   {
                         $this->otherdb->like('a.name_customer',$name);
                   }
+
                   $this->otherdb->limit($limit,$per_page);
                   return $this->otherdb->get();
             }
@@ -82,6 +101,28 @@
                   $this->db->select('id_customer, sum(credit_limit) as total');
                   $this->db->from('db_requests');
                   $this->db->where('id_customer',$id_customer);
+                  return $this->db->get();
+            }
+
+            function get_data()
+            {
+                  $id_role = $this->session->userdata('id_role');
+                  $id_area = $this->session->userdata('id_area');
+
+                  $this->db->select('distinct(id_customer), credit_limit, max_top');
+                  $this->db->from('db_requests a');
+                  $this->db->join('db_users b','a.id_user=b.id');
+                  $this->db->where('id_request_status','7');
+                  $this->db->order_by('update_date','DESC');
+                  $this->db->group_by('id_customer');
+                  return $this->db->get();
+            }
+
+            function get_outstanding()
+            {
+                  $this->db->select('id_customer, sum(outstanding_amount) as total');
+                  $this->db->from('db_outstandings');
+                  $this->db->group_by('id_customer');
                   return $this->db->get();
             }
       }

@@ -21,20 +21,25 @@
 
             function index()
             {
+                $id_user = $this->session->userdata('id');
                 $per_page = abs($this->input->get('per_page'));
                 $limit = 10;
-                $status = $this->input->get('status');
                 $area = $this->input->get('area');
+                $bulan = $this->input->get('bulan');
+                $tahun = $this->input->get('tahun');
 
-                $tot = $this->request_model->all();
-                $data['name'] = $this->request_model->limit($limit,$per_page,$status,$area);
+                $tot = $this->request_model->all($area,$bulan,$tahun);
+                $data['name'] = $this->request_model->limit($limit,$per_page,$area,$bulan,$tahun);
                 $data['status'] = $this->request_model->get_request_status();
                 $data['customer'] = $this->request_model->get_all_customer();
                 $data['user'] = $this->request_model->get_user();
                 $data['area'] = $this->request_model->get_list_area();
+                $data['month'] = $this->request_model->get_month();
+                $data['year'] = $this->request_model->get_year();
+                $data['notif'] = $this->request_model->get_notification_list($id_user); //tambahkan baris ini
 
                 $pagination['page_query_string']  = TRUE;    
-                $pagination['base_url']           = site_url().'/request?area='.$area.'&status'.$status;
+                $pagination['base_url']           = site_url().'/request?area='.$area.'&bulan='.$bulan.'&tahun='.$tahun;
                 $pagination['total_rows']         = $tot->num_rows();
                 $pagination['per_page']           = $limit;
                 $pagination['uri_segment']        = $per_page;
@@ -115,20 +120,34 @@
                     date_default_timezone_set('Asia/Jakarta');
                     $requested_date = date('Y-m-d H:i:s');
                     $id_user = $this->session->userdata('id');
+                    $id_role = $this->session->userdata('id_role');
                     $po_amount = $this->input->post('po_amount');
                     $po = str_replace(".", "", $po_amount);
+                    $credit_limit = $this->input->post('credit_limit');
+                    $cl = str_replace(".", "", $credit_limit);
                     $idc = $this->input->post('id_customer');
                     $datas = $this->request_model->get_user_id($id_user);
                     $cus = $this->request_model->get_customer_by_id($idc);
 
+                    if($id_role=='7')
+                    {
+                        $id_request_status = 3;
+                    }
+                    else
+                    {
+                        $id_request_status = 1;
+                    }
+ 
                     $data = array(
                     'id_user' =>$id_user,
                     'id_customer' =>$idc,
+                    'credit_limit' =>$cl,
                     'top' =>$this->input->post('top'),
+                    'max_top' =>$this->input->post('max_top'),
                     'po_amount' =>$po,
                     'requested_note' =>$this->input->post('requested_note'),
                     'requested_date' =>$requested_date,
-                    'id_request_status' =>1
+                    'id_request_status' =>$id_request_status
                     );
 
                     $req = $this->request_model->add_request($data);
@@ -137,16 +156,12 @@
                         'id_request' => $req,
                         'id_user' => $id_user,
                         'date_timeline' => $requested_date,
-                        'id_request_status' => 1
+                        'id_request_status' => $id_request_status
                     );
 
                     $this->request_model->add_timeline($data3);
 
-                    //upload file ke db_file
- 
-                    $config['upload_path']      = './myfile/';
-                    $config['allowed_types']    = 'jpg|jpeg|png|pdf|xls|xlsx';
-                    $config['overwrite']        = false;
+                    
              
                     if(!empty($_FILES['files']['name'])){
              
@@ -161,11 +176,18 @@
                             $_FILES['files']['error']    = $files['files']['error'][$i];
                             $_FILES['files']['size']     = $files['files']['size'][$i];
              
-                           $this->load->library('upload',$config);
-                           $this->upload->initialize($config);
+                            //upload file ke db_file
+                            $config['upload_path']      = './myfile/';
+                            $config['allowed_types']    = 'jpg|jpeg|png|pdf|xls|xlsx';
+                            $config['overwrite']        = false;
+                            $config['file_name']        = preg_replace('/[^a-zA-Z0-9.]/','',$files['files']['name'][$i]);
+                            
+                            $this->load->library('upload',$config);
+                            $this->upload->initialize($config);
              
                            if($this->upload->do_upload('files')){
                             $filedata = $this->upload->data();
+
                             $data4[$i]['id_request'] = $req;
                             $data4[$i]['file_name'] = $filedata['file_name'];
                             }
@@ -215,6 +237,7 @@
                     $data['customer'] = $this->request_model->get_customer_by_id($idc);
 
                     $request = $this->acl->get_user_permissions()->request;
+                    
                     if($this->session->userdata('logged_in') and $request=='1')
                     {
                         $data['isi'] = 'request/edit';
@@ -298,33 +321,37 @@
 
             function add_attachment()
             {
-                $config['upload_path'] = './myfile/';
-                $config['allowed_types'] = 'pdf|xlsx|xls|csv|doc|docx';
-                $config['no_space'] = TRUE;
+                $new = $_FILES['file_upload']['name'];
+                $new_name = preg_replace('/[^a-zA-Z0-9.]/','',$new);
 
+                $config['upload_path'] = './myfile/';
+                $config['allowed_types'] = 'pdf|xlsx|xls|csv|doc|docx|jpg|jpeg|png';
+                //$config['no_space'] = TRUE;
+                $config['file_name'] = $new_name;
+                
+                $this->load->library('upload', $config);
                 $this->upload->initialize($config);
 
                 if ( ! $this->upload->do_upload('file_upload'))
                 {
                     print_r($this->upload->display_errors());
-                    //$data = array('error' => $this->upload->display_errors());
                 }
                 else
                 {
-                    $this->load->library('upload', $config);
                     $filename = $this->upload->data();
                     $file = $filename['file_name'];
-
+                    
                     $id = $this->uri->segment(3);
                     $idc = $this->uri->segment(4);
 
                     $data = array(
                         'id_request' => $id,
-                        'file_name' =>$file,
+                        'file_name' => $file,
                         'status_confidential' =>$this->input->post('status_confidential')
                     );
 
                     $this->request_model->add_request_file($data);
+
 
                     redirect('request/view_request/'.$id.'/'.$idc);
                     $this->db->close();
@@ -346,8 +373,10 @@
             {
                 $id = $this->uri->segment(3);
                 $idc = $this->uri->segment(4);
+                $ids = $this->uri->segment(5);
                 $id_user = $this->session->userdata('id');
                 $note_comment = $this->input->post('note_comment');
+                $confidential = $this->input->post('status_confidential');
 
                 date_default_timezone_set('Asia/Jakarta');
                 $date = date('Y-m-d H:i:s');
@@ -359,27 +388,76 @@
                 
                 $data = array(
                     'id_request' => $id,
+                    'id_request_status' => $ids,
                     'id_user' => $id_user,
                     'note_comment' => $note_comment,
-                    'date_comment' => $date
+                    'date_comment' => $date,
+                    'status_confidential' => $confidential
                 );
 
                 $last = $this->request_model->add_comment($data);
 
-                
+                //jika komentar berstatus confidential maka notification type berubah jadi 4
+                if($confidential == 1)
+                {
+                    $nontification_reference_type = 4;
+                }else{
+                    $nontification_reference_type = 1;
+                }
+
+                $data2 = array(
+                    'notification_label' =>$notification_label,
+                    'notification_link' =>$notification_link,
+                    'notification_datetime' =>$date,
+                    'notification_reference_type' =>$nontification_reference_type,
+                    'notification_reference_id' =>$id,
+                    'id_user' =>$id_user
+                );
+
+                $this->request_model->add_notification($data2);
+                //echo json_encode($last);
+
+                redirect('request/view_request/'.$id.'/'.$idc);
+            }
+
+            function add_comment_change_state($new_state)
+            {
+                $id = $this->uri->segment(3);
+                $idc = $this->uri->segment(4);
+                $id_user = $this->session->userdata('id');
+ 
+                date_default_timezone_set('Asia/Jakarta');
+                $date = date('Y-m-d H:i:s');
+ 
+                $this->db->select('name_user');
+                $this->db->from('db_users');
+                $this->db->where('id',$id_user);
+                $query = $this->db->get();
+ 
+                $notification_link = site_url().'/request/view_request/'.$id.'/'.$idc;
+                $notification_label = $query->row()->name_user.' commented on request no. '.$id.'<br> <i class="fa fa-comment text-aqua"></i> "'.$this->input->post('note_comment').'"';
+               
+                $data = array(
+                    'id_request' => $id,
+                    'id_request_status' => $new_state,
+                    'id_user' => $id_user,
+                    'note_comment' => $this->input->post('note_comment'),
+                    'date_comment' => $date
+                );
+
+                $this->request_model->add_comment($data);
+               
                 $data2 = array(
                     'notification_label' =>$notification_label,
                     'notification_link' =>$notification_link,
                     'notification_datetime' =>$date,
                     'notification_reference_type' =>1,
                     'notification_reference_id' =>$id,
-                    'id_user' =>$id_user,
-                    'id_comment' => $last
+                    'id_user' =>$id_user
                 );
-
+ 
                 $this->request_model->add_notification($data2);
-                echo json_encode($last);
-
+ 
                 //redirect('request/view_request/'.$id.'/'.$idc);
             }
 
@@ -421,10 +499,15 @@
 
                 if($new_state != $query2->row()->id_request_status)
                 {
-                    $reference_id = 1;
+
                     if($new_state == 5){
                         $reference_id = 2;
+                    }elseif($new_state == 7){
+                        $reference_id = 3;
+                    }else{
+                        $reference_id = 1;
                     }
+
                     $data2 = array(
                                 'notification_label' =>$notification_label1,
                                 'notification_link' =>$notification_link,
@@ -443,29 +526,43 @@
                     );
 
                     $this->request_model->edit_request($id,$data);
-                    $this->add_comment();
+
+                    $data3 = array(
+                        'id_request' => $id,
+                        'id_user' => $id_user,
+                        'date_timeline' => $date,
+                        'id_request_status' => $new_state
+                        );
+         
+                    $this->request_model->add_timeline($data3);
+
+                    $this->add_comment_change_state($new_state);
+                    //$this->add_comment();
                     //kirim email sesuai perubahan state
-                    $this->send_mail($new_state,$id,$link_email);
+                    //$this->send_mail($new_state,$id,$link_email);
+                    $this->delete_notification($new_state,$id);
 
                 }else{
-                    $this->add_comment();
+                    //$this->add_comment();
+                    $this->add_comment_change_state($new_state);
                 }
-                
-                $data3 = array(
-                    'id_request' => $id,
-                    'id_user' => $id_user,
-                    'date_timeline' => $date,
-                    'id_request_status' => $new_state
-                );
-
-                $this->request_model->add_timeline($data3);
 
                 redirect('request/view_request/'.$id.'/'.$idc);
             }
 
             function total_pending()
             {
-                $data['data'] = $this->request_model->get_total_pending();
+                $bulan = $this->input->get('bulan');
+                $tahun = $this->input->get('tahun');
+
+                $data['data'] = $this->request_model->get_total_pending($bulan,$tahun);
+                $this->load->view('template/total_request',$data);
+            }
+
+            //notif sidebar
+            function total_pending_notif()
+            {
+                $data['data'] = $this->request_model->get_total_pending_notif();
                 $this->load->view('template/total_request',$data);
             }
 
@@ -473,16 +570,24 @@
             {
                 $per_page = abs($this->input->get('per_page'));
                 $limit = 20;
-                $cari = $this->input->get('search');
 
-                $tot = $this->request_model->all_history();
-                $data['name'] = $this->request_model->limit_history($limit,$per_page,$cari);
+                $area = $this->input->get('area');
+                $bulan = $this->input->get('bulan');
+                $tahun = $this->input->get('tahun');
+
+                $tot = $this->request_model->all_history($area,$bulan,$tahun);
+                $data['name'] = $this->request_model->limit_history($limit,$per_page,$area,$bulan,$tahun);
                 $data['status'] = $this->request_model->get_request_status();
                 $data['customer'] = $this->request_model->get_all_customer();
                 $data['user'] = $this->request_model->get_user();
+                $data['note'] = $this->request_model->get_approval_note();
+
+                $data['area'] = $this->request_model->get_list_area();
+                $data['month'] = $this->request_model->get_month();
+                $data['year'] = $this->request_model->get_year();
 
                 $pagination['page_query_string']  = TRUE;    
-                $pagination['base_url']           = site_url().'/request/history?search=';
+                $pagination['base_url']           = site_url().'/request/history?area='.$area.'&bulan='.$bulan.'&tahun='.$tahun;
                 $pagination['total_rows']         = $tot->num_rows();
                 $pagination['per_page']           = $limit;
                 $pagination['uri_segment']        = $per_page;
@@ -517,6 +622,7 @@
 
 
                 $request = $this->acl->get_user_permissions()->request;
+                
                     if($this->session->userdata('logged_in') and $request=='1')
                     {
                         $data['isi'] = 'request/list_history';
@@ -527,6 +633,80 @@
                     {
                         redirect('login','refresh');
                     }
+
+                $this->db->close();
+            }
+
+            //baru 26/09/2019
+            function search_history()
+            {
+                $per_page = abs($this->input->get('per_page'));
+                $limit = 20;
+
+                $area = $this->input->get('area');
+                $bulan = $this->input->get('bulan');
+                $tahun = $this->input->get('tahun');
+                $cari = $this->input->get('cari');
+
+                $tot = $this->request_model->all_history_search($area,$bulan,$tahun,$cari);
+                $data['name'] = $this->request_model->limit_history_search($limit,$per_page,$area,$bulan,$tahun,$cari);
+                $data['status'] = $this->request_model->get_request_status();
+                $data['customer'] = $this->request_model->get_all_customer();
+                $data['user'] = $this->request_model->get_user();
+                $data['note'] = $this->request_model->get_approval_note();
+
+                $data['area'] = $this->request_model->get_list_area();
+                $data['month'] = $this->request_model->get_month();
+                $data['year'] = $this->request_model->get_year();
+
+                $pagination['page_query_string']  = TRUE;    
+                $pagination['base_url']           = site_url().'/request/search_history?area='.$area.'&bulan='.$bulan.'&tahun='.$tahun.'&cari='.$cari;
+                $pagination['total_rows']         = $tot->num_rows();
+                $pagination['per_page']           = $limit;
+                $pagination['uri_segment']        = $per_page;
+                $pagination['num_links']          = 2;
+
+                $pagination['full_tag_open'] = '<ul class="pagination">';
+                $pagination['full_tag_close'] = '</ul>';
+
+                $pagination['first_link'] = '<<';
+                $pagination['first_tag_open'] = '<li class="prev page">';
+                $pagination['first_tag_close'] = '</li>';
+
+                $pagination['last_link'] = '>>';
+                $pagination['last_tag_open'] = '<li class="next page">';
+                $pagination['last_tag_close'] = '</li>';
+
+                $pagination['next_link'] = '>';
+                $pagination['next_tag_open'] = '<li class="next page">';
+                $pagination['next_tag_close'] = '</li>';
+
+                $pagination['prev_link'] = '<';
+                $pagination['prev_tag_open'] = '<li class="prev page">';
+                $pagination['prev_tag_close'] = '</li>';
+
+                $pagination['cur_tag_open'] = '<li class="active"><a href="">';
+                $pagination['cur_tag_close'] = '</a></li>';
+
+                $pagination['num_tag_open'] = '<li class="page">';
+                $pagination['num_tag_close'] = '</li>';
+
+                $this->pagination->initialize($pagination);
+
+
+                $request = $this->acl->get_user_permissions()->request;
+
+                    if($this->session->userdata('logged_in') and $request=='1')
+                    {
+                        $data['isi'] = 'request/list_history_search';
+                        $this->load->view('preview', $data, true);
+                        $this->load->view('template/template', $this->data);
+                    }
+                    else
+                    {
+                        redirect('login','refresh');
+                    }
+
                 $this->db->close();
             }
 
@@ -666,6 +846,15 @@
                     return true;
                 }else{
                     show_error($this->email->print_debugger());
+                }
+            }
+
+            function delete_notification($new_state,$id)
+            {
+                if($new_state == '7'){
+                    $this->request_model->delete_notification($id);
+                }else{
+                    return true;
                 }
             }
         }

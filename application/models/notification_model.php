@@ -41,6 +41,7 @@
                   {
                         //$this->db->where('a.notification_reference_type !=',3);
                         $this->db->where('c.id_user',$id_user);
+                        $this->db->where('a.notification_reference_type !=',4);
                   }
 
                   if($id_role == 11)
