@@ -18,18 +18,19 @@
     background-color:rgba(0, 0, 0, 0.6);
     cursor:pointer;
   }
+
 </style>
 
 <header class="main-header">
     <!-- Logo -->
-    <a href="index2.html" class="logo">
+    <a href="index2.html" class="logo logo-sfs">
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini"><b>CL</b></span>
       <!-- logo for regular state and mobile devices -->
       <span class="logo-lg"><b>CREDIT LIMIT</b></span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
-    <nav class="navbar navbar-static-top">
+    <nav class="navbar navbar-static-top navbar-sfs">
       <!-- Sidebar toggle button-->
       <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
         <span class="sr-only">Toggle navigation</span>
@@ -55,13 +56,13 @@
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="<?php echo base_url(); ?>assets/photo/<?php echo $this->acl->get_user()->photo;?>" class="user-image">
+              <img src="<?php echo base_url(); ?>assets/photo/<?php if($this->acl->get_user()->photo!=''){echo $this->acl->get_user()->photo;}else{echo "blank.jpg";}?>" class="user-image">
               <span class="hidden-xs"><?php echo $this->acl->get_user()->name_user;?></span>
             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
-              <li class="user-header">
-                    <img src="<?php echo base_url(); ?>assets/photo/<?php echo $this->acl->get_user()->photo;?>" class="img-circle">
+              <li class="user-header navbar-sfs">
+                    <img src="<?php echo base_url(); ?>assets/photo/<?php if($this->acl->get_user()->photo!=''){echo $this->acl->get_user()->photo;}else{echo "blank.jpg";}?>" id="picture" class="img-circle imgc">
                   <p class="caption-imgc" id="change"><small>Change</small></p>
                   <p>
                     <?php echo $this->acl->get_user()->name_user;?>
@@ -85,8 +86,8 @@
     </nav>
   </header>
 
-  <div class="modal fade" tab-index="-1" id="modal-default" aria-hidden="true" role="dialog">
-    <div class="modal-dialog" role="document">
+  <div class="modal fade" id="modal-default" aria-hidden="true">
+    <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -113,7 +114,7 @@
           </div>
           <div class="modal-footer">
             <button type="reset" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Save changes</button>
+            <button type="submit" class="btn btn-sfs">Save changes</button>
           </div>
         </form>
       </div>
@@ -144,6 +145,7 @@
 
 
 <script>
+  $(document).ready(function(){
 
     $('#change').on('click',function(){
       $('#modal-default').modal('toggle');
@@ -171,7 +173,7 @@
             onChange: updateCoords,
             boxWidth: crop_max_width,
             boxHeight: crop_max_height,
-            setSelect: [100,100,354,354],
+            setSelect: [100,100,345,345],
             aspectRatio : 1
           });
         }
@@ -187,4 +189,5 @@
       $('#h').val(c.h);
     }
 
+  });
   </script>

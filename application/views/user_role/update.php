@@ -21,7 +21,7 @@
     <label for="role" class="col-sm-2 control-label">User Role List</label>
 
 <div class="row">
-<div class="col-sm-3">
+    <div class="col-sm-3">
     <?php $admin_login = $this->acl->get_role_id_permissions($baris->id)->admin_login;?>
     <input type="hidden" name="admin_login" value="0">
     <br><span class="box-heading"><input type="checkbox" name="admin_login" value="1" <?php if($admin_login==1){echo "checked=checked";}?>> Admin Login</span>

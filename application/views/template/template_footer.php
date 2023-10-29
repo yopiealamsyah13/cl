@@ -1,5 +1,5 @@
 <footer class="main-footer">
-    <strong>Copyright &copy; 2019 <a href="http://www.sefasgroup.com">SEFAS Group</a>.</strong> All rights
+    <strong>Copyright &copy; 2022 <a href="http://www.sefasgroup.com">SEFAS Group</a>.</strong> All rights
     reserved.
 </footer>
 

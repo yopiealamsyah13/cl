@@ -1,14 +1,14 @@
 <?php
 foreach ($data as $row) {
     ?>
-     <li <?php 
+     <li <?php
      foreach($unread->result() as $key){
      if($key->notification_id == $row->notification_id){ ?>style="background: #c5c5c5;"<?php }} ?>>
         <a class="read" href="" data-value="<?php echo $row->notification_id;?>" data-path="<?php echo $row->notification_link;?>" data-req="<?php echo $row->notification_reference_id;?>">
-            <img class="img-circle img-sm" src="<?php echo base_url(); ?>assets/photo/<?php echo $row->photo;?>"> 
-            <i><?php echo $row->notification_label;?></i><br>
+            <img class="img-circle img-sm" src="<?php echo base_url(); ?>assets/photo/<?php echo $row->photo;?>">
+            <?php echo $row->notification_label; ?><br>
             <i><small>
-            <?php 
+            <?php
             date_default_timezone_set('Asia/Jakarta');
             $now = new DateTime('now');  //mengambil tanggal sekarang
             $date = new DateTime($row->notification_datetime); //mengambil tanggal data di input
@@ -30,7 +30,8 @@ foreach ($data as $row) {
 <?php } ?>
 <script type="text/javascript">
 $(document).ready(function(){
-
+    
+ 
     $('.read').click(function(){
         var id_user = parseInt("<?php echo $this->session->userdata('id');?>");
         var date = new Date();
@@ -51,6 +52,5 @@ $(document).ready(function(){
             }
         });
     });
-
 });
 </script>

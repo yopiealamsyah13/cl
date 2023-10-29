@@ -12,13 +12,13 @@
 </section>
 <section class="content">
 <div class="box box-primary">
-        <form name="form-validate" id="engine" enctype="multipart/form-data" class="form-horizontal" method="post" action="<?php echo site_url(); ?>/request/edit_request/<?php echo $baris->id_request;?>/<?php echo $baris->id_customer;?>">
+        <form name="form-validate" id="engine" enctype="multipart/form-data" class="form-horizontal" method="post" action="<?php echo site_url(); ?>/request/edit_request/<?php echo $baris->id_request;?>/<?php echo $baris->id_internal;?>">
         <div class="box-body">
 
           <div class="form-group form-group-sm">
             <label for="id_customer" class="col-sm-2 control-label">Customer :</label>
               <div class="col-sm-4">
-                <input type="text" class="form-control" value="<?php echo $customer->row()->name_customer;?>" disabled>
+                <input type="text" class="form-control" value="<?php echo $customer->row()->companyname." ".$customer->row()->firstname." ".$customer->row()->middlename." ".$customer->row()->lastname;?>" disabled>
               </div>
           </div>
 
@@ -30,22 +30,25 @@
               </div>
           </div>
 
-          <div class="form-group form-group-sm">
-            <label for="max_top" class="col-sm-2 control-label">Max Outstanding Days :</label>
-              <div class="col-sm-4">
-                <input type="text" class="form-control" name="max_top" value="<?php echo $baris->max_top;?>" placeholder="Input TOP">
-              </div>
-          </div>
           <?php }else{?>
             <input type="hidden" name="credit_limit" value="<?php echo $baris->credit_limit;?>">
-            <input type="hidden" name="max_top" value="<?php echo $baris->max_top;?>">
           <?php }?>
 
           <?php if($id_role=='10' or $id_role=='1'){?>
           <div class="form-group form-group-sm">
-            <label for="top" class="col-sm-2 control-label">TOP :</label>
+            <label for="top" class="col-sm-2 control-label">Terms :</label>
               <div class="col-sm-4">
-                <input type="text" class="form-control" name="top" value="<?php echo $baris->top;?>" placeholder="Input TOP">
+              <select class="form-control select2" name="top" id="top" style="width: 100%;">
+                  <option value="">-- Pilih Term --</option>
+                  <?php 
+                    foreach ($terms->result() as $rowt) {
+                      if($baris->id_terms == $rowt->id_terms){
+                  ?>
+                  <option value="<?php echo $rowt->id_terms; ?>" selected><?php echo strtoupper($rowt->term_description); ?></option>
+                  <?php }else{ ?>
+                    <option value="<?php echo $rowt->id_terms; ?>"><?php echo strtoupper($rowt->term_description); ?></option>
+                  <?php }} ?>
+                </select>
               </div>
           </div>
 
@@ -63,7 +66,7 @@
               </div>
           </div>
           <?php }else{?>
-            <input type="hidden" name="top" value="<?php echo $baris->top;?>">
+            <input type="hidden" name="top" value="<?php echo $baris->id_terms;?>">
             <input type="hidden" name="po_amount" value="<?php echo $baris->po_amount;?>">
             <input type="hidden" name="requested_note" value="<?php echo $baris->requested_note;?>">
           <?php }?>
@@ -71,7 +74,7 @@
         </div>
         <div class="box-footer">
           <button type="submit" class="btn btn-xs btn-primary">Submit</button>
-          <button type="button" class="btn btn-xs btn-danger" onclick="window.location.href='<?php echo site_url() ?>/request/view_request/<?php echo $baris->id_request;?>/<?php echo $baris->id_customer;?>'; return false;">Cancel</button>
+          <button type="button" class="btn btn-xs btn-danger" onclick="window.location.href='<?php echo site_url() ?>/request/view_request/<?php echo $baris->id_request;?>/<?php echo $baris->id_internal; ?>'; return false;">Cancel</button>
         </div>
         </form>
     </div>

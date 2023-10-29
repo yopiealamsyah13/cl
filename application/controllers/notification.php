@@ -26,7 +26,8 @@ class Notification extends CI_Controller {
 
         $tot = $this->notification_model->all();
         $data['notification'] = $this->notification_model->limit($limit,$per_page);
-        $data['unread'] = $this->notification_model->get_unread_notification();
+
+        $data['unread'] = $this->notification_model->get_unread_notification(); 
 
         $pagination['page_query_string']  = TRUE;    
         $pagination['base_url']           = site_url().'/notification?';

@@ -11,13 +11,13 @@ $add_request = $this->acl->get_user_permissions()->add_request;
           <select name="bulan" class="form-control" style="width: 200px">
             <option value="">- Month -</option>
             <?php foreach ($month->result() as $key) { ?>
-            <option value="<?php echo $key->bulan?>"><?php echo date('F',strtotime($key->requested_date));?></option>
+            <option value="<?php echo $key->bulan?>" <?php if (isset($_GET['bulan']) && $_GET['bulan'] == $key->bulan) { echo "selected";} ?> ><?php echo date('F',strtotime($key->requested_date));?></option>
             <?php }?>
           </select>
           <select name="tahun" class="form-control" style="width: 200px">
             <option value="">- Year -</option>
             <?php foreach ($year->result() as $key) { ?>
-            <option value="<?php echo $key->year?>"><?php echo $key->year?></option>
+            <option value="<?php echo $key->year?>" <?php if (isset($_GET['tahun']) && $_GET['tahun'] == $key->year) { echo "selected";} ?> ><?php echo $key->year?></option>
             <?php }?>
           </select>
           <div class="btn-group">
@@ -38,7 +38,7 @@ $add_request = $this->acl->get_user_permissions()->add_request;
           <div class="small-box bg-aqua">
             <div class="inner">
               <h3><?php if($pending->row()->total>0){?><?php echo $pending->row()->total;?><?php }else{echo "0";}?></h3>
-
+ 
               <p>PENDING</p>
             </div>
             <div class="icon">
@@ -49,36 +49,19 @@ $add_request = $this->acl->get_user_permissions()->add_request;
             </a>
           </div>
         </div>
-        <!-- ./col -->
-        <div class="col-lg-4 col-xs-6">
-          <!-- small box -->
-          <div class="small-box bg-green">
-            <div class="inner">
-              <h3><?php if($closed->row()->total>0){?><?php echo $closed->row()->total;?><?php }else{echo "0";}?></h3>
-
-              <p>CLOSED</p>
-            </div>
-            <div class="icon">
-              <i class="fa fa-book"></i>
-            </div>
-            <a href="<?php echo site_url() ?>/request/history?bulan=<?php echo $closed->row()->bulan;?>&tahun=<?php echo $closed->row()->tahun;?>" class="small-box-footer" class="small-box-footer">
-              More info <i class="fa fa-arrow-circle-right"></i>
-            </a>
-          </div>
-        </div>
-        <!-- ./col -->
+        
         <div class="col-lg-4 col-xs-6">
           <!-- small box -->
           <div class="small-box bg-yellow">
             <div class="inner">
               <h3><?php if($total->row()->total>0){?><?php echo $total->row()->total;?><?php }else{echo "0";}?></h3>
-
+ 
               <p>TOTAL REQUEST</p>
             </div>
             <div class="icon">
               <i class="ion ion-stats-bars"></i>
             </div>
-            <a href="<?php echo site_url() ?>/request?bulan=<?php echo $total->row()->bulan;?>&tahun=<?php echo $total->row()->tahun;?>" class="small-box-footer">
+            <a href="<?php echo site_url() ?>/request" class="small-box-footer">
               More info <i class="fa fa-arrow-circle-right"></i>
             </a>
           </div>
@@ -110,11 +93,9 @@ $add_request = $this->acl->get_user_permissions()->add_request;
         <?php } ?>
         <?php if($add_request=='1'){?>
         <div class="col-sm-8">
-          <div class="box">
+          <div class="box box-primary">
             <div class="box-header with-border">
               <h3 class="box-title">My Request Credit Limit</h3>
-              
-            </div>
               <div class="box-body chart-responsive">
                 <?php 
                 $data="";
@@ -125,11 +106,12 @@ $add_request = $this->acl->get_user_permissions()->add_request;
                 $data = substr($data, 0, -2);
                 ?>
 
-                <div class="chart" id="request" style="height: 345px;"></div>
+                <div class="chart" id="request" style="height: 300px;"></div>
               </div>
+            </div>
           </div>
         </div>
-        
+
         <script>
           $(function () {
             //BAR CHART VISIT
@@ -147,10 +129,8 @@ $add_request = $this->acl->get_user_permissions()->add_request;
         </script>
         <?php } ?>
 
-         
-      <?php if($id_role!='10'){ ?>
-        
-        <div class="col-md-4">
+        <?php if($id_role!='10'){ ?>
+            <div class="col-md-4">
               <div class="box box-widget widget-user-2">
                 <!-- Add the bg color to the header using any of the bg-* classes -->
                 <div class="widget-user-header bg-red">
@@ -218,27 +198,6 @@ $add_request = $this->acl->get_user_permissions()->add_request;
                 </div>
               </div>
             </div>
-
-        <div class="col-md-4">
-            <!-- Widget: user widget style 1 -->
-            <div class="box box-widget widget-user-2">
-              <!-- Add the bg color to the header using any of the bg-* classes -->
-              <div class="widget-user-header bg-red">
-                <!-- /.widget-user-image -->
-                <h3>Closed By</h3>
-                <h5>User List</h5>
-              </div>
-              <div class="box-footer no-padding">
-                <ul class="nav nav-stacked">
-                <?php foreach ($user_close->result() as $value) {?>
-                  <li><a href="#"><?php echo $value->name_user;?> <span class="pull-right badge bg-red"><?php echo $value->total;?></span></a></li>
-                <?php } ?>
-                </ul>
-              </div>
-            </div>
-            <!-- /.widget-user -->
-          </div>
-
 
       <?php } ?>
       </div>

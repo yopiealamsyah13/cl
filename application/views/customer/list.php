@@ -24,19 +24,19 @@
     if(count($name->result()) > 0) {
   ?>
 <div class="box-body">
-  <table id="mytable" class="table table-bordered table-striped">
+  <table id="mytable" class="table table-bordered table-striped" style="font-size: 12px;">
     <thead>
       <tr style="background-color: #3c8dbc; color: #fff;">
-        <td width="33">No.</td>
-        <td width="300">Customer</td>
-        <td width="150">Sales</td>
-        <td width="100">Master Credit Limit</td>
-        <td width="100">Master TOP</td>
-        <td width="100">Credit Limit</td>
-        <td width="100">Max Outstanding Days</td>
-        <td width="100">AR Outstanding</td>
-        <td width="100">Over Under</td>
-        <td width="33">#</td>
+        <th width="33">No.</th>
+	<th width="90">Netsuite ID</th> 
+        <th>Customer Name</th>
+        <th>Sales Rep</th>
+        <th>Master Credit Limit</th>
+        <th>Master Terms</th>
+        <th>Credit Limit</th>
+        <th>Balance</th>
+        <th>Over Under</th>
+        <th width="33">#</th>
       </tr>
     </thead>
 
@@ -48,21 +48,21 @@
     ?>
       <tr>
         <td><?php echo $no; ?></td>
-        <td><a href="<?php echo site_url();?>/customer/customer_profile/<?php echo $baris->id_customer; ?>"><?php if($baris->name_entity!='Pte Ltd' and $baris->name_entity!='Ltd' and $baris->name_entity!='GmbH & Co. KG' and $baris->name_entity!='Other' and $baris->name_entity!='Perseorangan'){ echo $baris->name_entity;}?> <?php echo strtoupper($baris->name_customer);?> <?php if($baris->name_entity=='Pte Ltd' or $baris->name_entity=='Ltd' or $baris->name_entity=='GmbH & Co. KG'){ echo strtoupper($baris->name_entity);}?> <?php if($baris->status_existing=='1'){?><i class="fa fa-check text-success"></i><?php } ?></td>
-        <td><?php echo $baris->name_user;?></td>
-        <td><?php echo number_format($baris->credit_limit,0,',','.');?></td>
+	<td><?php echo $baris->id_netsuite;?></td>
+        <td><a href="<?php echo site_url();?>/customer/customer_profile/<?php echo $baris->id_internal; ?>"><?php echo $baris->companyname;?><?php echo $baris->firstname;?> <?php echo $baris->middlename;?> <?php echo $baris->lastname;?></td>
+        <td><?php echo $baris->salesrepname;?></td>
+        <td><?php echo number_format($baris->master_credit_limit,2,'.',',');?></td>
         <td><?php echo $baris->outstanding_over;?></td>
-        <td><?php foreach($data->result() as $row){if($baris->id_customer==$row->id_customer){ $credit_limit = $row->credit_limit; echo number_format($credit_limit,0,',','.');}} ?></td>
-        <td><?php foreach($data->result() as $row){if($baris->id_customer==$row->id_customer){echo number_format($row->max_top,0,',','.');}} ?></td>
-        <td><a href="<?php echo site_url();?>/outstanding?cust=<?php echo $baris->id_customer;?>"><?php foreach($outstanding->result() as $rowo){if($baris->id_customer==$rowo->id_customer){$total = $rowo->total; if($total!='0'){echo number_format($total,0,',','.');}}} ?></a></td>
+        <td><?php foreach($data->result() as $row){if($baris->id_internal==$row->id_internal){ $credit_limit = $row->credit_limit; echo number_format($credit_limit,2,'.',',');}} ?></td>
+        <td><?php echo number_format($baris->balance,2,'.',',');?></td>
         <td>
           <?php
-            $selisih = $credit_limit-$total;
+            $selisih = $credit_limit-$baris->balance;
             if ($selisih < 0)
             {
-              $print_number = "<span style='color:red;'>(".str_replace('-', '', number_format ($selisih, 0, ",", ".")) . ")</span>"; 
+              $print_number = "<span style='color:red;'>(".str_replace('-', '', number_format ($selisih, 2, ".", ",")) . ")</span>"; 
             }else{ 
-              $print_number = number_format ($selisih, 0, ",", ".") ; 
+              $print_number = number_format ($selisih, 2, ".", ",") ; 
             }
             if($print_number!='0')
             {
@@ -71,10 +71,10 @@
           ?>
         </td>
         <td>
-          <a class="btn btn-success btn-xs" data-toggle="modal" data-target="#edit<?php echo $baris->id_customer;?>"><span class="fa fa-pencil"></span></a>
+          <a class="btn btn-success btn-xs" data-toggle="modal" data-target="#edit<?php echo $baris->id_internal;?>"><span class="fa fa-pencil"></span></a>
 
 <!-- Edit Customer -->
-<div class="modal fade" id="edit<?php echo $baris->id_customer;?>" role="dialog">
+<div class="modal fade" id="edit<?php echo $baris->id_internal;?>" role="dialog">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -82,19 +82,19 @@
         <h3 class="modal-title">Edit Customer</h3>
       </div>
       <div class="modal-body form">
-      <form name="form-validate" id="edit" class="form-horizontal" enctype="multipart/form-data" method="post" action="<?php echo site_url(); ?>/customer/edit_customer/<?php echo $baris->id_customer;?>">
+      <form name="form-validate" id="edit" class="form-horizontal" enctype="multipart/form-data" method="post" action="<?php echo site_url(); ?>/customer/edit_customer/<?php echo $baris->id_internal;?>">
           <div class="form-body">
             <div class="form-group form-group-sm">
-              <label class="control-label col-sm-4">Credit Limit</label>
+              <label class="control-label col-sm-4">Master Credit Limit</label>
               <div class="col-sm-6">
-                <input data-a-dec="," data-a-sep="." name="credit_limit" placeholder="Input Credit Limit" class="credit_limit form-control" value="<?php echo $baris->credit_limit;?>" required>
+                <input data-a-dec="." data-a-sep="," name="master_credit_limit" placeholder="Input Master Credit Limit" class="master_credit_limit form-control" value="<?php echo $baris->master_credit_limit;?>" required>
               </div>
             </div>
 
             <div class="form-group form-group-sm">
-              <label class="control-label col-sm-4">TOP</label>
+              <label class="control-label col-sm-4">Master Terms</label>
               <div class="col-sm-6">
-                <input name="outstanding_over" placeholder="Input Outstanding Over" class="form-control" value="<?php echo $baris->outstanding_over;?>" required>
+                <input name="outstanding_over" placeholder="Input Master Term" class="form-control" value="<?php echo $baris->outstanding_over;?>" required>
               </div>
             </div>
 
@@ -111,7 +111,7 @@
 </div>
 
 <script type="text/javascript">
-  $('.credit_limit').autoNumeric();
+  $('.master_credit_limit').autoNumeric();
 </script>
 
 <script type="text/javascript">
@@ -119,7 +119,7 @@ $(document).ready(function() {
   $('#edit').validate(
   {
     rules: {
-      credit_limit: {
+      master_credit_limit: {
         required: true
       },
       outstanding_over: {
@@ -127,8 +127,8 @@ $(document).ready(function() {
       }
     },
     messages: {
-      credit_limit: "input credit_limit",
-      outstanding_over: "input outstanding over"
+      master_credit_limit: "input master credit limit",
+      outstanding_over: "input master terms"
     }
   });
 });
@@ -153,23 +153,28 @@ $(document).ready(function() {
   <?php
     } else {
   ?>
-  
-  <table class="table table-bordered table-striped"> 
+  <div class="box-body">
+  <table id="mytable" class="table table-bordered table-striped" style="font-size: 12px;">
     <thead> 
-      <tr>
+      <tr style="background-color: #3c8dbc; color: #fff;">
         <th width="33">No.</th>
-        <th width="300">Customer</th>
-        <th width="150">Sales</th>
-        <th width="150">Credit Limit</th>
-        <th width="100">Outstanding Over</th>
+	      <th width="90">Netsuite ID</th> 
+        <th>Customer Name</th>
+        <th>Sales Rep</th>
+        <th>Master Credit Limit</th>
+        <th>Master Terms</th>
+        <th>Credit Limit</th>
+        <th>Balance</th>
+        <th>Over Under</th>
         <th width="33">#</th>
       </tr>
     </thead> 
     
     <tbody> 
-      <td colspan="6" align="center">No Data Available</td>    
+      <td colspan="10" align="center">No Data Available</td>    
     </tbody>
-  </table>    
+  </table>
+</div>    
   <?php } ?>
 
 </div>

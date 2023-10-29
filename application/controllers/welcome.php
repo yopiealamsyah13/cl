@@ -33,14 +33,10 @@ class Welcome extends CI_Controller {
             $data['get_chart'] = $this->request_model->get_history_request();
             $data['month'] = $this->request_model->get_month();
             $data['year'] = $this->request_model->get_year();
-
-            //baru
-            $data['user_close'] = $this->request_model->get_user_closed($bulan,$tahun);
-            
             $data['new_request'] = $this->request_model->get_new_request($bulan,$tahun);
             $data['new_area'] = $this->request_model->get_new_by_area($bulan,$tahun);
             $data['count_new_customer'] = $this->request_model->get_new_customer($bulan,$tahun);
-            
+
             $data['isi'] = 'welcome_message';
             $this->load->view('preview', $data, true);
             $this->load->view('template/template', $this->data);
@@ -52,20 +48,20 @@ class Welcome extends CI_Controller {
         }
     }
 
-    public function change_picture()
+    function change_picture()
     {
         $id_user = $this->session->userdata('id');
-        $old = $this->input->post('old');
-
+       $old = $this->input->post('old');
+ 
         $config['upload_path'] = './assets/photo/';
         $config['allowed_types'] = 'jpg|jpeg|png';
-        $config['width'] = 354;
-        $config['height'] = 354;
+        $config['width']= 354;
+        $config['height']= 354;
         $config['remove_spaces'] = true;
         $config['detect_mime'] = true;
-
+ 
         $this->upload->initialize($config);
-
+ 
         if ( ! $this->upload->do_upload('file_upload'))
         {
             ?>
@@ -78,19 +74,19 @@ class Welcome extends CI_Controller {
         else
         {
             $filename = $this->upload->data();
-
+ 
             $new_image['image_library'] = 'gd2';
             $new_image['source_image'] = './assets/photo/'.$filename['file_name'];
             $new_image['new_image'] = './assets/photo/'.$filename['file_name'];
-            $new_image['create_thumb'] = false;
-            $new_image['maintain_ratio'] = false;
-            $new_image['quality'] = '30%';
+            $new_image['create_thumb']= false;
+            $new_image['maintain_ratio']= false;
+            $new_image['quality']= '100%';
             $new_image['width'] = $this->input->post('w');
             $new_image['height'] = $this->input->post('h');
             $new_image['x_axis'] = $this->input->post('x');
             $new_image['y_axis'] = $this->input->post('y');
-            //$new_image['master_dim'] = 'auto';
-            
+            $new_image['master_dim']= 'auto';
+ 
             $this->load->library('image_lib', $new_image);
             $this->image_lib->crop();
 

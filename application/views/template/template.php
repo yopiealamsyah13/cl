@@ -16,6 +16,8 @@
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/dist/css/AdminLTE.min.css">
 <!-- AdminLTE Skins. Choose a skin from the css/skins folder instead of downloading all of them to reduce the load. -->
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/dist/css/skins/_all-skins.min.css">
+<!-- custom -->
+<link rel="stylesheet" href="<?php echo base_url("assets/custom/custom-style.css") ?>">
 <!-- Date Picker -->
 <link rel="stylesheet" href="<?php echo base_url(); ?>assets/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
 <!-- Daterange picker -->
@@ -35,6 +37,8 @@
 
 <!-- Google Font -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+<!-- Sweet Alert -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.min.css">
 
 
 <!-- jQuery 3 -->
@@ -42,8 +46,6 @@
 <!-- DataTables -->
 <script src="<?php echo base_url(); ?>assets/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="<?php echo base_url(); ?>assets/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-<!-- jQuery UI 1.11.4 -->
-<script src="<?php echo base_url(); ?>assets/bower_components/jquery-ui/jquery-ui.min.js"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
   $.widget.bridge('uibutton', $.ui.button);
@@ -80,9 +82,11 @@
 <script src="<?php echo base_url(); ?>assets/bower_components/morris.js/morris.min.js"></script>
 <!-- jcrop -->
 <script src="<?php echo base_url(); ?>assets/bower_components/jcrop/jquery.Jcrop.js"></script>
+<!-- sweer alert -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.33.1/sweetalert2.min.js"></script>
 
 </head>
-<body class="hold-transition skin-blue fixed sidebar-mini" id="<?php echo isset($modul) ? $modul : ''; ?>">
+<body class="hold-transition skin-blue sidebar-mini" id="<?php echo isset($modul) ? $modul : ''; ?>">
 
 
 <?php $this->load->view('template/template_header'); ?>

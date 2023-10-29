@@ -82,11 +82,11 @@ class Customer extends CI_Controller {
     {
         $id = $this->uri->segment(3);
 
-        $credit_limit = $this->input->post('credit_limit');
-        $cl = str_replace(".", "", $credit_limit);
+        $master_credit_limit = $this->input->post('master_credit_limit');
+        $cl = str_replace(",", "", $master_credit_limit);
 
         $data = array(
-        'credit_limit' => $cl,
+        'master_credit_limit' => $cl,
         'outstanding_over' => $this->input->post('outstanding_over')
         );
         $this->customer_model->edit_customer($id,$data);
@@ -96,12 +96,12 @@ class Customer extends CI_Controller {
 
     function customer_profile()
     {
-        $id_customer = $this->uri->segment(3);
+        $idc = $this->uri->segment(3);
 
-        $data['profile'] = $this->customer_model->customer_profile($id_customer);
-        $data['request'] = $this->customer_model->customer_request($id_customer);
-        $data['activity'] = $this->customer_model->customer_activity($id_customer);
-        $data['credit'] = $this->customer_model->total_cl($id_customer);
+        $data['profile'] = $this->customer_model->customer_profile($idc);
+        $data['request'] = $this->customer_model->customer_request($idc);
+        $data['activity'] = $this->customer_model->customer_activity($idc);
+        $data['credit'] = $this->customer_model->total_cl($idc);
 
         $customer = $this->acl->get_user_permissions()->customer;
         if($this->session->userdata('logged_in') and $customer=='1')

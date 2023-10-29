@@ -229,38 +229,49 @@
                 }
             }
 
+            function password_matches()
+            {
+                $id = $this->session->userdata('id');
+                $data['user'] = $this->user_list_model->userbyid($id);
+                if (md5($this->input->post('current_pass')) != $data['user']->row()->password)
+                {
+                    $this->form_validation->set_message('password_matches', 'current password is not matched');
+                    return FALSE;
+                }
+                else
+                {
+                    return TRUE;
+                }
+            }
+
             function change_password()
             {
                 $id = $this->session->userdata('id');
-                
                 $this->form_validation->set_rules('current_pass', 'Current Password', 'trim|required|xss_clean|callback_password_matches');
                 $this->form_validation->set_rules('new_pass', 'New Password', 'required');
                 $this->form_validation->set_rules('confirm_pass', 'Confirm Password', 'trim|min_length[6]|max_length[20]|required|matches[new_pass]|xss_clean');
                 
-                $this->form_validation->set_error_delimiters('<div class="alert alert-danger"> <button type="button" class="close" data-dismiss="alert">&times;</button>', '</div>');
-                if ($this->form_validation->run() == FALSE)
-                {
-                    if($this->session->userdata('logged_in'))
-                    {
-                            $data['user'] = $this->user_list_model->userbyid($id);
+            $this->form_validation->set_error_delimiters('<div class="alert alert-danger"> <button type="button" class="close" data-dismiss="alert">&times;</button>', '</div>');
+            if ($this->form_validation->run() == FALSE)
+            {
+                  if($this->session->userdata('logged_in'))
+                  {
+                        $data['user'] = $this->user_list_model->userbyid($id);
 
-                            $data['isi'] = 'user_list/change_password';
-                            $this->load->view('preview', $data, true);
-                            $this->load->view('template/template', $this->data); 
-                    }
-                    else
-                    {
-                            redirect('login','refresh');
-                    } 
-                }else{
-                    
-                    $data = array(
-                        'password' =>md5($this->input->post('confirm_pass'))
-                    );
-
-                    $this->user_list_model->change_password($data,$id);
-                    redirect('welcome');
-                }     
+                        $data['isi'] = 'user_list/change_password';
+                        $this->load->view('preview', $data, true);
+                        $this->load->view('template/template', $this->data); 
+                  }
+                  else
+                  {
+                        redirect('login','refresh');
+                  } 
+            }else{
+            $data = array(
+            'password' =>md5($this->input->post('confirm_pass')));
+            $this->user_list_model->change_password($data,$id);
+            redirect('welcome');
+            }     
             }
         }    
         

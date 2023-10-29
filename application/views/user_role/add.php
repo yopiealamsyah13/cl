@@ -17,7 +17,7 @@
   <div class="form-group form-group-sm">
     <label for="role" class="col-sm-2 control-label">User Role List</label>
 
-<div class="row">
+  <div class="row">
     <div class="col-sm-3">
     <input type="hidden" name="admin_login" value="0">
     <br><span class="box-heading"><input type="checkbox" name="admin_login" value="1"> Admin Login</span>
@@ -30,10 +30,9 @@
 
     <input type="hidden" name="user_role" value="0">
     <br><span class="box-heading"><input type="checkbox" name="user_role" value="1"> User Role</span>
-</div>
+  </div>
 
-    <div class="col-sm-3">
-
+  <div class="col-sm-3">
     <input type="hidden" name="request" value="0">
     <br><span class="box-heading"><input type="checkbox" name="request" value="1"> Request</span>
 
@@ -51,7 +50,7 @@
 
     <input type="hidden" name="outstanding" value="0">
     <br><span class="box-heading"><input type="checkbox" name="outstanding" value="1"> AR Outstanding</span>
-    </div>
+  </div>
 </div>
 
   <div class="box-footer">

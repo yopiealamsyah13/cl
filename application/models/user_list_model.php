@@ -143,7 +143,7 @@
                   return $this->db->get();
             }
 
-            function change_password($id,$data)
+            function change_password($data,$id)
             {
                   $this->db->where('id',$id);
                   $this->db->update('db_users',$data);

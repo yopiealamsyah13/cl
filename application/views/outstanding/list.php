@@ -288,66 +288,21 @@ $(function() {
         <td><?php echo date('d/m/Y',strtotime($baris->invoice_date));?></td>
         <td><?php if($baris->receive_date==''){}else{echo date('d/m/Y',strtotime($baris->receive_date));}?></td>
         <td><?php foreach($customer->result() as $rowc){if($baris->id_customer==$rowc->id_customer){echo $rowc->outstanding_over;}}?></td>
-        <td><?php 
-            foreach($customer->result() as $rowc){
-              if($baris->id_customer==$rowc->id_customer){
-
-                if($baris->receive_date!=''){
-                    $age = date('Y-m-d',strtotime('+'.$rowc->outstanding_over.' days',strtotime($baris->receive_date)));
-                  }else{
-                    $age = date('Y-m-d',strtotime('+'.$rowc->outstanding_over.' days',strtotime($baris->invoice_date)));
-                  } 
-                  
-                  echo date('d/m/Y',strtotime($age));
-                  }
-                }
-        ?></td>
+        <td><?php foreach($customer->result() as $rowc){if($baris->id_customer==$rowc->id_customer){if($baris->receive_date!=''){$age = date('Y-m-d',strtotime('+'.$rowc->outstanding_over.' days',strtotime($baris->receive_date)));}else{$age = date('Y-m-d',strtotime('+'.$rowc->outstanding_over.' days',strtotime($baris->invoice_date)));} echo date('d/m/Y',strtotime($age));}}?></td>
         <td><?php echo number_format($baris->invoice_amount,0,',','.');?></td>
         <td><?php echo number_format($baris->outstanding_amount,0,',','.');?></td>
-        <td><?php 
-                  date_default_timezone_set('Asia/Jakarta'); 
-                  $today = new DateTime('now'); 
-                  $day = new DateTime($age); 
-                  $diff = $day->diff($today); 
-                  echo $diff->format('%R%a');
-        ?></td>
-        <td>
-            <?php 
-              foreach($customer->result() as $rowc){
-                if($baris->id_customer==$rowc->id_customer){
-                    echo number_format($rowc->credit_limit,0,',','.');
-                  }
-                }
-            ?>
-        </td>
+        <td><?php date_default_timezone_set('Asia/Jakarta'); $today = new DateTime('now'); $day = new DateTime($age); $diff = $day->diff($today); echo $diff->format('%R%a');?></td>
+        <td><?php foreach($customer->result() as $rowc){if($baris->id_customer==$rowc->id_customer){echo number_format($rowc->credit_limit,0,',','.');}}?></td>
         <td><?php foreach($customer->result() as $rowc){if($baris->id_customer==$rowc->id_customer){echo $rowc->name_user;}}?></td>
         <td><?php foreach($customer->result() as $rowc){if($baris->id_customer==$rowc->id_customer){echo $rowc->name_area;}}?></td>
         <td><?php foreach($customer->result() as $rowc){if($baris->id_customer==$rowc->id_customer){echo $rowc->alias_company;}}?></td>
         <td><?php echo $baris->po_number;?></td>
         <td><?php echo $baris->remark;?></td>
-        <td><?php 
-                  date_default_timezone_set('Asia/Jakarta'); 
-                  $today = new DateTime('now'); 
-                  $day = new DateTime($age); 
-                  $diff = $day->diff($today);
-                   
-                  if($diff->format('%R%a')<1){
-                    echo number_format($baris->outstanding_amount,0,',','.');
-                  }
-        ?></td>
+        <td><?php date_default_timezone_set('Asia/Jakarta'); $today = new DateTime('now'); $day = new DateTime($age); $diff = $day->diff($today); if($diff->format('%R%a')<1){echo number_format($baris->outstanding_amount,0,',','.');}?></td>
         <td><?php date_default_timezone_set('Asia/Jakarta'); $today = new DateTime('now'); $day = new DateTime($age); $diff = $day->diff($today); if($diff->format('%R%a')>0 and $diff->format('%R%a')<31){echo number_format($baris->outstanding_amount,0,',','.');}?></td>
         <td><?php date_default_timezone_set('Asia/Jakarta'); $today = new DateTime('now'); $day = new DateTime($age); $diff = $day->diff($today); if($diff->format('%R%a')>30 and $diff->format('%R%a')<61){echo number_format($baris->outstanding_amount,0,',','.');}?></td>
         <td><?php date_default_timezone_set('Asia/Jakarta'); $today = new DateTime('now'); $day = new DateTime($age); $diff = $day->diff($today); if($diff->format('%R%a')>60 and $diff->format('%R%a')<91){echo number_format($baris->outstanding_amount,0,',','.');}?></td>
-        <td><?php 
-                  date_default_timezone_set('Asia/Jakarta'); 
-                  $today = new DateTime('now'); 
-                  $day = new DateTime($age); 
-                  $diff = $day->diff($today);
-                   
-                  if($diff->format('%R%a')>90 and $diff->format('%R%a')<121){
-                      echo number_format($baris->outstanding_amount,0,',','.');
-                      }
-        ?></td>
+        <td><?php date_default_timezone_set('Asia/Jakarta'); $today = new DateTime('now'); $day = new DateTime($age); $diff = $day->diff($today); if($diff->format('%R%a')>90 and $diff->format('%R%a')<121){echo number_format($baris->outstanding_amount,0,',','.');}?></td>
         <td><?php date_default_timezone_set('Asia/Jakarta'); $today = new DateTime('now'); $day = new DateTime($age); $diff = $day->diff($today); if($diff->format('%R%a')>120 and $diff->format('%R%a')<151){echo number_format($baris->outstanding_amount,0,',','.');}?></td>
         <td><?php date_default_timezone_set('Asia/Jakarta'); $today = new DateTime('now'); $day = new DateTime($age); $diff = $day->diff($today); if($diff->format('%R%a')>150 and $diff->format('%R%a')<181){echo number_format($baris->outstanding_amount,0,',','.');}?></td>
         <td><?php date_default_timezone_set('Asia/Jakarta'); $today = new DateTime('now'); $day = new DateTime($age); $diff = $day->diff($today); if($diff->format('%R%a')>180 and $diff->format('%R%a')<241){echo number_format($baris->outstanding_amount,0,',','.');}?></td>
@@ -360,7 +315,7 @@ $(function() {
     ?>
 
       <tr>
-        <td colspan="26">
+        <td colspan="25">
           <div class="pagination"><?php echo $this->pagination->create_links(); ?></div>
         </td>
       </tr>
@@ -403,7 +358,7 @@ $(function() {
     </thead> 
     
     <tbody> 
-      <td colspan="26">No Data Available</td>    
+      <td colspan="25">No Data Available</td>    
     </tbody>
   </table>
   </div>    
